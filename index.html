@@ -102,7 +102,37 @@ input{font-family:'DM Sans',sans-serif}
 .lost-card-label{font-size:9px;color:#64748b;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
 .lost-card-value{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#f87171}
 .lost-card-sub{font-size:10px;color:#7f1d1d;margin-top:4px;font-weight:600}
-@media(max-width:768px){.team-compare{grid-template-columns:1fr}.cards-grid{grid-template-columns:repeat(2,1fr)}.target-cards{grid-template-columns:1fr}#day-picker-wrap{display:none}#content{padding:12px}}
+@media(max-width:900px){.team-compare{grid-template-columns:1fr}}
+@media(max-width:768px){
+  .cards-grid{grid-template-columns:repeat(2,1fr)}
+  .target-cards{grid-template-columns:1fr}
+  #day-picker-wrap{display:none}
+  #content{padding:10px 12px}
+  #header{padding:8px 12px}
+  #main-tabs{gap:0}
+  .main-tab{padding:8px 10px;font-size:11px}
+  .team-compare{grid-template-columns:1fr}
+  .col-heads,.tbl-row{overflow-x:auto}
+  #pipeline-bar{padding:6px 12px}
+  .filter-bar{padding:6px 12px}
+  .tbl-head{padding:10px 12px}
+  .chart-wrap{padding:12px}
+  canvas{max-height:160px!important}
+}
+@media(max-width:480px){
+  .cards-grid{grid-template-columns:repeat(2,1fr)}
+  #dash-h1{font-size:15px}
+  .main-tab{padding:7px 8px;font-size:10px}
+  #header-right{gap:3px}
+  .pill{padding:4px 8px;font-size:10px}
+  #app-title{font-size:13px}
+  .card-value{font-size:20px}
+  .tbl-row{font-size:11px}
+  .col-head{font-size:8px}
+  .tcell{font-size:11px}
+  .uname{font-size:11px}
+  .badge{font-size:9px;padding:2px 5px}
+}
 </style>
 </head>
 <body>
@@ -155,6 +185,7 @@ input{font-family:'DM Sans',sans-serif}
       <button class="main-tab" id="mt-lost">❌ Kayıplar</button>
       <button class="main-tab" id="mt-trend">📈 Trend</button>
       <button class="main-tab" id="mt-target">🎯 Hedef</button>
+      <button class="main-tab" id="mt-source">📡 Kaynak</button>
     </div>
     <div id="view-overview"><div class="cards-grid" id="cards-overview"></div><div class="team-compare" id="team-compare-wrap"></div><div class="table-wrap"><div class="tbl-head"><span class="tbl-head-title">🏆 Top 5 Performans</span></div><div id="top5-body"></div></div></div>
     <div id="view-sales" style="display:none"><div class="cards-grid" id="cards-sales"></div><div class="table-wrap"><div class="tbl-head"><span class="tbl-head-title">💼 Satış Ekibi</span><span id="sales-count" style="font-size:11px;color:#475569"></span></div><div id="sales-body"></div></div></div>
@@ -178,6 +209,15 @@ input{font-family:'DM Sans',sans-serif}
         <div class="target-cards" id="target-cards"></div>
       </div>
     </div>
+    <!-- KAYNAK ANALİZİ -->
+    <div id="view-source" style="display:none">
+      <div class="cards-grid" id="cards-source"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:16px" id="source-bars"></div>
+      <div class="table-wrap">
+        <div class="tbl-head"><span class="tbl-head-title">📡 Kaynak Bazlı Anlaşmalar</span><span id="source-count" style="font-size:11px;color:#475569"></span></div>
+        <div id="source-body"></div>
+      </div>
+    </div>
   </div>
 </div>
 <script>
@@ -199,7 +239,7 @@ document.getElementById('p10').addEventListener('click',function(){setQuick('p10
 document.getElementById('p30').addEventListener('click',function(){setQuick('p30',30);});
 document.getElementById('btn-custom-apply').addEventListener('click',function(){var v=parseInt(document.getElementById('custom-days').value,10);if(isNaN(v)||v<1)return;customDays=v;setActivePill('custom');if(webhookUrl)loadData();});
 document.getElementById('custom-days').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('btn-custom-apply').click();});
-['overview','sales','tech','activities','deals','lost','trend','target'].forEach(function(k){document.getElementById('mt-'+k).addEventListener('click',function(){setMainTab(k);});});
+['overview','sales','tech','activities','deals','lost','trend','target','source'].forEach(function(k){document.getElementById('mt-'+k).addEventListener('click',function(){setMainTab(k);});});
 document.getElementById('at-contacts').addEventListener('click',function(){currentActTab='contacts';renderActivities();});
 document.getElementById('at-companies').addEventListener('click',function(){currentActTab='companies';renderActivities();});
 ['all','won','lost','changed'].forEach(function(k){document.getElementById('dt-'+k).addEventListener('click',function(){currentDealTab=k;renderDealsView();});});
@@ -235,7 +275,7 @@ function loadData(){
     b24('crm.category.list',{entityTypeId:2}).then(function(r){var cats=(r&&r.categories)||[];CHANNEL_NAMES={};cats.forEach(function(c){CHANNEL_NAMES[String(c.id)]=c.name;});return[{id:'all',name:'Tüm Kanallar'}].concat(cats.map(function(c){return{id:String(c.id),name:c.name};}));}).catch(function(){return[{id:'all',name:'Tüm Kanallar'}];}),
     b24('department.get',{}).then(function(r){return Array.isArray(r)?r:(r&&r.result||[]);}).catch(function(){return[];}),
     b24All('user.get',{ACTIVE:true}).catch(function(){return[];}),
-    b24All('crm.deal.list',{filter:df,select:['ID','TITLE','STAGE_ID','OPPORTUNITY','ASSIGNED_BY_ID','DATE_CREATE','DATE_MODIFY','CATEGORY_ID','STAGE_SEMANTIC_ID']}).catch(function(){return[];}),
+    b24All('crm.deal.list',{filter:df,select:['ID','TITLE','STAGE_ID','OPPORTUNITY','ASSIGNED_BY_ID','DATE_CREATE','DATE_MODIFY','CATEGORY_ID','STAGE_SEMANTIC_ID','SOURCE_ID']}).catch(function(){return[];}),
     b24All('crm.activity.list',{filter:{'>=CREATED':range.start,'<=CREATED':range.end,'OWNER_TYPE_ID':'3','!=TYPE_ID':'1'},select:['ID','SUBJECT','TYPE_ID','RESPONSIBLE_ID','CREATED','OWNER_ID','COMPLETED']}).catch(function(){return[];}),
     b24All('crm.activity.list',{filter:{'>=CREATED':range.start,'<=CREATED':range.end,'OWNER_TYPE_ID':'4','!=TYPE_ID':'1'},select:['ID','SUBJECT','TYPE_ID','RESPONSIBLE_ID','CREATED','OWNER_ID','COMPLETED']}).catch(function(){return[];}),
     b24All('tasks.task.list',{filter:{'>=CREATED_DATE':range.start,'<=CREATED_DATE':range.end},select:['id','title','status','responsible','createdDate']}).then(function(r){return r&&r.tasks?r.tasks:(r||[]);}).catch(function(){return[];}),
@@ -484,7 +524,122 @@ function utHtml(users,compact){
 
 function renderCards(id,items){document.getElementById(id).innerHTML=items.map(function(c){return'<div class="card" onmouseenter="this.style.borderColor=\''+c.color+'\'" onmouseleave="this.style.borderColor=\'#1e293b\'"><div class="card-icon">'+c.icon+'</div><div class="card-label">'+c.label+'</div><div class="card-value">'+c.value+'</div>'+(c.sub?'<div class="card-sub" style="color:'+c.color+'">'+c.sub+'</div>':'')+'</div>';}).join('');}
 
-function setMainTab(t){currentMainTab=t;['overview','sales','tech','activities','deals','lost','trend','target'].forEach(function(k){document.getElementById('mt-'+k).classList.toggle('active',k===t);document.getElementById('view-'+k).style.display=k===t?'block':'none';});if(t==='trend'&&currentData)setTimeout(function(){renderTrend();},50);}
+// Kaynak eşleme - Bitrix24 SOURCE_ID → 3 ana kategori
+var SOURCE_MAP = {
+  // ÖZSATIŞ — Satış ekibinin kendisi buldu
+  'RC_GENERATOR':  {label:'Özsatış', color:'#3b82f6', icon:'🎯'},
+  'FACE_TRACKER':  {label:'Özsatış', color:'#3b82f6', icon:'🎯'},
+  'RECOMMENDATION':{label:'Özsatış', color:'#3b82f6', icon:'🎯'},
+  'UC_Q1XV0L':     {label:'Özsatış', color:'#3b82f6', icon:'🎯'}, // Fuar, Seminer, Etkinlik
+
+  // MEVCUT BAYİ — Mevcut müşteri/bayi
+  'PARTNER':       {label:'Mevcut Bayi', color:'#f59e0b', icon:'🤝'},
+  'REPEAT_SALE':   {label:'Mevcut Bayi', color:'#f59e0b', icon:'🤝'},
+
+  // CRM (Gelen) — Müşteri kendisi aradı/yazdı/geldi
+  'CALL':          {label:'CRM', color:'#22c55e', icon:'☎️'},   // Arama
+  'CALLBACK':      {label:'CRM', color:'#22c55e', icon:'☎️'},   // Geri arama
+  'WEBFORM':       {label:'CRM', color:'#22c55e', icon:'🌐'},   // CRM Form
+  'EMAIL':         {label:'CRM', color:'#22c55e', icon:'📧'},   // E-Mail
+  'ADVERTISING':   {label:'CRM', color:'#22c55e', icon:'📣'},   // Reklam
+  'STORE':         {label:'CRM', color:'#22c55e', icon:'🛒'},   // Çevrimiçi Mağaza
+  'BOOKING':       {label:'CRM', color:'#22c55e', icon:'📅'},   // Rezervasyon
+  // Canlı sohbet kanalları
+  '12|OPENLINE':   {label:'CRM', color:'#22c55e', icon:'💬'},
+  '2|OPENLINE':    {label:'CRM', color:'#22c55e', icon:'💬'},
+  '4|OPENLINE':    {label:'CRM', color:'#22c55e', icon:'💬'},
+  '6|OPENLINE':    {label:'CRM', color:'#22c55e', icon:'💬'},
+  '14|OPENLINE':   {label:'CRM', color:'#22c55e', icon:'💬'},
+  '24|OPENLINE':   {label:'CRM', color:'#22c55e', icon:'💬'},
+  // Sosyal medya
+  '4|FBINSTAGRAMDIRECT': {label:'CRM', color:'#22c55e', icon:'📸'},
+  '4|INSTAGRAM':         {label:'CRM', color:'#22c55e', icon:'📸'},
+  '4|FACEBOOK':          {label:'CRM', color:'#22c55e', icon:'👥'},
+  '4|NOTIFICATIONS':     {label:'CRM', color:'#22c55e', icon:'📱'},
+  // WhatsApp
+  '28|WZ_WHATSAPP_C3426A6ABAF3A06E578E3D84AB84A7B80': {label:'CRM', color:'#22c55e', icon:'💚'},
+  'WZ145bc8f4-bce5-4d29-9d1c-537dbd679725':           {label:'CRM', color:'#22c55e', icon:'💚'},
+};
+
+function getSource(sourceId) {
+  if(!sourceId) return {label:'Belirtilmemiş', color:'#334155', icon:'—'};
+  return SOURCE_MAP[sourceId] || {label:'Diğer', color:'#64748b', icon:'❓'};
+}
+
+function renderSource() {
+  var d = currentData;
+  var deals = d.deals;
+
+  // Kaynak bazlı gruplama
+  var groups = {};
+  deals.forEach(function(deal) {
+    var src = getSource(deal.SOURCE_ID);
+    var key = src.label;
+    if(!groups[key]) groups[key] = {label:key, color:src.color, icon:src.icon, deals:[], won:0, lost:0, value:0, wonValue:0};
+    groups[key].deals.push(deal);
+    if(deal.STAGE_SEMANTIC_ID==='S'){groups[key].won++;groups[key].wonValue+=parseFloat(deal.OPPORTUNITY||0);}
+    if(deal.STAGE_SEMANTIC_ID==='F') groups[key].lost++;
+    groups[key].value+=parseFloat(deal.OPPORTUNITY||0);
+  });
+
+  var groupArr = Object.values(groups).sort(function(a,b){return b.deals.length-a.deals.length;});
+  var total = deals.length || 1;
+
+  // KPI kartları
+  renderCards('cards-source', groupArr.slice(0,4).map(function(g){
+    return {label:g.icon+' '+g.label, value:g.deals.length, sub:g.won+' kazanıldı · '+fmtUSD(g.wonValue), color:g.color, icon:''};
+  }));
+
+  // Bar chart görünümü
+  var barsHtml = groupArr.map(function(g) {
+    var pct = Math.round(g.deals.length/total*100);
+    var wr = g.deals.length>0?Math.round(g.won/g.deals.length*100):0;
+    return '<div style="background:#0d1b2e;border:1px solid #1e293b;border-radius:12px;padding:16px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
+        '<div style="font-size:13px;font-weight:700;color:#e2e8f0">'+g.icon+' '+g.label+'</div>'+
+        '<div style="font-size:11px;color:#475569">'+g.deals.length+' anlaşma · %'+wr+' kaz.</div>'+
+      '</div>'+
+      '<div style="background:#0f172a;border-radius:6px;height:10px;overflow:hidden;margin-bottom:8px">'+
+        '<div style="height:100%;border-radius:6px;background:'+g.color+';width:'+pct+'%;transition:width 1s ease"></div>'+
+      '</div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:11px;color:#475569">'+
+        '<span style="color:'+g.color+'">%'+pct+' pay</span>'+
+        '<span style="color:#22c55e">'+fmtUSD(g.wonValue)+' kazanıldı</span>'+
+        '<span style="color:#f87171">'+g.lost+' kayıp</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  document.getElementById('source-bars').innerHTML = barsHtml;
+  document.getElementById('source-count').textContent = deals.length + ' anlaşma · ' + groupArr.length + ' kaynak';
+
+  // Anlaşma tablosu
+  var cols = '1fr 100px 100px 100px 90px 90px';
+  var html = '<div class="col-heads" style="grid-template-columns:'+cols+';gap:6px">'+
+    ['Anlaşma','Sorumlu','Kaynak','Tutar (USD)','Durum','Tarih'].map(function(h){return'<div class="col-head">'+h+'</div>';}).join('')+'</div>';
+
+  if(!deals.length){html+='<div class="empty-row">Bu dönem için anlaşma yok.</div>';}
+  else{
+    deals.slice().sort(function(a,b){return new Date(b.DATE_CREATE)-new Date(a.DATE_CREATE);}).forEach(function(deal){
+      var user=null; d.users.forEach(function(u){if(u.ID===deal.ASSIGNED_BY_ID)user=u;});
+      var name=user?((user.NAME||'')+' '+(user.LAST_NAME||'')).trim():('#'+deal.ASSIGNED_BY_ID);
+      var src=getSource(deal.SOURCE_ID);
+      var isWon=deal.STAGE_SEMANTIC_ID==='S',isLost=deal.STAGE_SEMANTIC_ID==='F';
+      var bg=isWon?'#14532d':isLost?'#450a0a':'#1e3a5f';
+      var fc=isWon?'#4ade80':isLost?'#f87171':'#93c5fd';
+      html+='<div class="tbl-row" style="grid-template-columns:'+cols+';gap:6px">'+
+        '<div style="color:#e2e8f0;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+deal.TITLE+'</div>'+
+        '<span style="color:#64748b;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+name+'</span>'+
+        '<span class="ch-tag" style="background:#0f172a;color:'+src.color+';border:1px solid #1e293b">'+src.icon+' '+src.label+'</span>'+
+        '<span style="color:#22c55e;font-weight:700;font-size:12px;font-family:monospace">'+fmtUSD(deal.OPPORTUNITY)+'</span>'+
+        '<span class="badge" style="background:'+bg+';color:'+fc+'">'+(isWon?'Kazanıldı':isLost?'Kaybedildi':'Devam')+'</span>'+
+        '<div style="color:#94a3b8;font-size:11px"><div>'+fmtDate(deal.DATE_CREATE)+'</div><div style="color:#334155;margin-top:1px">'+fmtTime(deal.DATE_CREATE)+'</div></div>'+
+      '</div>';
+    });
+  }
+  document.getElementById('source-body').innerHTML = html;
+}
+
+function setMainTab(t){currentMainTab=t;['overview','sales','tech','activities','deals','lost','trend','target','source'].forEach(function(k){document.getElementById('mt-'+k).classList.toggle('active',k===t);document.getElementById('view-'+k).style.display=k===t?'block':'none';});if(t==='trend'&&currentData)setTimeout(function(){renderTrend();},50);if(t==='source'&&currentData)renderSource();}
 
 function showSpinner(){document.getElementById('spinner').style.display='flex';document.getElementById('dashboard').style.display='none';document.getElementById('empty').style.display='none';document.getElementById('error-box').style.display='none';}
 function hideSpinner(){document.getElementById('spinner').style.display='none';}
