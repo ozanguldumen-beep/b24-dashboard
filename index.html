@@ -429,21 +429,28 @@ function getDeptName(uid) {
   return found;
 }
 
-// Departman adına göre satış / teknik ayrımı
-var SALES_DEPT_NAME = 'Satış Departmanı';
-var TECH_DEPT_NAME = 'Ofis Teknik Departmanı';
+// Departman ID'ye göre satış / teknik ayrımı
+// Satış Departmanı ID: 5
+// Ofis Teknik Departmanı ID: 8
+var SALES_DEPT_ID = '5';
+var TECH_DEPT_ID = '8';
+
+function getUserDeptIds(uid) {
+  var ids = (currentData.userDeptMap || {})[uid] || [];
+  return ids.map(String);
+}
 
 function classifyUsers(userStats) {
   var sales=[], tech=[], other=[];
   userStats.forEach(function(u) {
-    var dept = u.deptName || '';
-    if(dept === SALES_DEPT_NAME) sales.push(u);
-    else if(dept === TECH_DEPT_NAME) tech.push(u);
-    else other.push(u); // diğer departmanlar (Ürün, İş Ortağı vb.)
+    var deptIds = getUserDeptIds(u.id);
+    if(deptIds.indexOf(SALES_DEPT_ID) !== -1) sales.push(u);
+    else if(deptIds.indexOf(TECH_DEPT_ID) !== -1) tech.push(u);
+    else other.push(u);
   });
-  // Departmanı bilinmeyenler deal'e göre fallback
+  // Departmanı tanımlanamayan kişiler: deal'i varsa satış, yoksa teknik
   other.forEach(function(u) {
-    if(u.deals>0) sales.push(u);
+    if(u.deals > 0) sales.push(u);
     else tech.push(u);
   });
   return {sales:sales, tech:tech};
