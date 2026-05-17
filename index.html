@@ -429,13 +429,21 @@ function getDeptName(uid) {
   return found;
 }
 
-// Satış ekibi mi teknik ekip mi?
-// Satış: deal'i olan kişiler (pipeline bazlı)
-// Teknik: deal'i olmayan ama aktivite/çağrısı olan kişiler
+// Departman adına göre satış / teknik ayrımı
+var SALES_DEPT_NAME = 'Satış Departmanı';
+var TECH_DEPT_NAME = 'Ofis Teknik Departmanı';
+
 function classifyUsers(userStats) {
-  var sales=[], tech=[];
+  var sales=[], tech=[], other=[];
   userStats.forEach(function(u) {
-    if(u.deals>0||u.wonDeals>0) sales.push(u);
+    var dept = u.deptName || '';
+    if(dept === SALES_DEPT_NAME) sales.push(u);
+    else if(dept === TECH_DEPT_NAME) tech.push(u);
+    else other.push(u); // diğer departmanlar (Ürün, İş Ortağı vb.)
+  });
+  // Departmanı bilinmeyenler deal'e göre fallback
+  other.forEach(function(u) {
+    if(u.deals>0) sales.push(u);
     else tech.push(u);
   });
   return {sales:sales, tech:tech};
@@ -595,14 +603,15 @@ function renderActivities() {
       var user=null; currentData.users.forEach(function(u){if(u.ID===a.RESPONSIBLE_ID) user=u;});
       var userName=user?((user.NAME||'')+' '+(user.LAST_NAME||'')).trim():('#'+a.RESPONSIBLE_ID);
       var actType=ACT_TYPES[String(a.TYPE_ID)]||{label:'Diğer',color:'#64748b',bg:'#1e293b'};
-      var dt=a.CREATED?new Date(a.CREATED).toLocaleDateString('tr-TR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+      var dtDate=a.CREATED?new Date(a.CREATED).toLocaleDateString('tr-TR',{day:'2-digit',month:'short',year:'numeric'}):'';
+      var dtTime=a.CREATED?new Date(a.CREATED).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}):'';
       var done=a.COMPLETED==='Y'||a.COMPLETED===true;
       html+='<div class="tbl-row" style="grid-template-columns:'+cols+';gap:8px">'+
         '<div><div style="color:#e2e8f0;font-size:13px;font-weight:600">'+(a.SUBJECT||ownerName)+'</div>'+
         '<div style="color:#475569;font-size:11px;margin-top:2px">📍 '+ownerName+'</div></div>'+
         '<span style="color:#94a3b8;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+userName+'</span>'+
         '<span class="act-type" style="color:'+actType.color+';background:'+actType.bg+'">'+actType.label+'</span>'+
-        '<span style="color:#475569;font-size:11px">'+dt+'</span>'+
+        '<div style="color:#475569;font-size:11px"><div>'+dtDate+'</div><div style="color:#334155;margin-top:1px">'+dtTime+'</div></div>'+
         '<span style="font-size:11px;font-weight:700;color:'+(done?'#4ade80':'#f59e0b')+'">'+(done?'✓ Tamam':'◑ Devam')+'</span>'+
         '</div>';
     });
