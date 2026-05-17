@@ -486,14 +486,31 @@ function renderDepts(depts) {
   });
 }
 
+// --- PİPELINE'A GÖRE İZİN VERİLEN KULLANICILAR ---
+// Pipeline seçildiyse sadece o pipeline'da deal'i olan kişiler gösterilir
+function getPipelineUserIds() {
+  if (selectedCat === 'all') return null;
+  var ids = [];
+  currentData.deals.forEach(function(x) {
+    if (ids.indexOf(x.ASSIGNED_BY_ID) === -1) ids.push(x.ASSIGNED_BY_ID);
+  });
+  return ids;
+}
+
 // --- USER STATS ---
-function computeUserStats(filteredUserIds) {
+function computeUserStats(deptFilterIds) {
   var d = currentData;
   var map = {};
+  var pipelineUserIds = getPipelineUserIds();
+
+  function isAllowed(uid) {
+    if (pipelineUserIds && pipelineUserIds.indexOf(uid) === -1) return false;
+    if (deptFilterIds && deptFilterIds.indexOf(uid) === -1) return false;
+    return true;
+  }
 
   d.users.forEach(function(u) {
-    // Departman filtresi varsa sadece o kullanıcıları al
-    if (filteredUserIds && filteredUserIds.indexOf(u.ID) === -1) return;
+    if (!isAllowed(u.ID)) return;
     map[u.ID] = {
       id: u.ID,
       name: ((u.NAME || '') + ' ' + (u.LAST_NAME || '')).trim() || u.LOGIN || ('#' + u.ID),
@@ -506,7 +523,7 @@ function computeUserStats(filteredUserIds) {
   });
 
   function ensure(id) {
-    if (filteredUserIds && filteredUserIds.indexOf(id) === -1) return false;
+    if (!isAllowed(id)) return false;
     if (!map[id]) map[id] = { id:id, name:'Kullanıcı #'+id, deptName:'', deals:0, wonDeals:0, dealValue:0, activities:0, calls:0, tasksTotal:0, tasksDone:0, contacts:0, companies:0 };
     return true;
   }
