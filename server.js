@@ -134,7 +134,19 @@ http.createServer(async (req, res) => {
       <span style="color:#64748b">👤 <b style="color:#94a3b8">${session.user}</b></span>
       <a href="/logout" style="color:#f87171;font-weight:600;text-decoration:none;font-size:11px;padding:3px 8px;background:#450a0a;border-radius:8px">Çıkış</a>
     </div>`;
-    const html = data.toString().replace('</body>', userBar + '</body>');
+    // Webhook URL'yi environment variable'dan inject et
+    const webhookUrl = process.env.BITRIX_WEBHOOK || '';
+    const autoWebhook = webhookUrl ? `<script>
+      (function(){
+        var stored = localStorage.getItem('b24_wh_v3');
+        if(!stored && '${webhookUrl}') {
+          localStorage.setItem('b24_wh_v3', '${webhookUrl}');
+        }
+      })();
+    </script>` : '';
+    let html = data.toString()
+      .replace('</body>', userBar + '</body>')
+      .replace('<script>', autoWebhook + '<script>');
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
   });
