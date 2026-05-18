@@ -623,19 +623,18 @@ async function loadCalendarEvents() {
   var users = (currentData && currentData.users) ? currentData.users : [];
   
   try {
-    // Önce şirket takvimi
+    // Sadece şirket takvimi
     var res = await b24('calendar.event.get', {type:'company', ownerId:0, dateFrom:startStr, dateTo:endStr});
-    if(res && Array.isArray(res)) allEvents = allEvents.concat(res.map(function(e){e._calType='company';return e;}));
-    
-    // Her kullanıcının takvimi
-    for(var i=0; i<Math.min(users.length,20); i++) {
-      try {
-        var ures = await b24('calendar.event.get', {type:'user', ownerId:users[i].ID, dateFrom:startStr, dateTo:endStr});
-        if(ures && Array.isArray(ures)) {
-          ures.forEach(function(e){ e._userId=users[i].ID; e._userName=((users[i].NAME||'')+' '+(users[i].LAST_NAME||'')).trim(); e._calType='user'; });
-          allEvents = allEvents.concat(ures);
-        }
-      } catch(e){}
+    if(res && Array.isArray(res)) {
+      res.forEach(function(e){
+        // Etkinliği kimin eklediğini kullanıcı listesinden bul
+        var creator = null;
+        users.forEach(function(u){ if(String(u.ID)===String(e.CREATED_BY)) creator=u; });
+        e._calType = 'company';
+        e._userId = e.CREATED_BY;
+        e._userName = creator ? ((creator.NAME||'')+' '+(creator.LAST_NAME||'')).trim() : ('Kullanıcı #'+e.CREATED_BY);
+      });
+      allEvents = res;
     }
   } catch(e) { console.error('Calendar error:', e); }
 
