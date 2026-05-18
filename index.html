@@ -670,7 +670,9 @@ function renderCalendar() {
   if(currentData && currentData.users) {
     var filterHtml = currentData.users.slice(0,8).map(function(u,i) {
       var hue = (parseInt(u.ID,10)*47)%360;
-      return '<div style="width:28px;height:28px;border-radius:50%;background:hsl('+hue+',55%,38%);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;title=''+((u.NAME||'')+' '+(u.LAST_NAME||'')).trim()+''">'+u.NAME.charAt(0)+'</div>';
+      var fullName = ((u.NAME||'') + ' ' + (u.LAST_NAME||'')).trim();
+      var initial = u.NAME ? u.NAME.charAt(0) : '?';
+      return '<div style="width:28px;height:28px;border-radius:50%;background:hsl(' + hue + ',55%,38%);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer" title="' + fullName + '">' + initial + '</div>';
     }).join('');
     document.getElementById('cal-user-filter').innerHTML = filterHtml;
   }
