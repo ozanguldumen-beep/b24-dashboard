@@ -186,6 +186,7 @@ input{font-family:'DM Sans',sans-serif}
       <button class="main-tab" id="mt-trend">📈 Trend</button>
       <button class="main-tab" id="mt-target">🎯 Hedef</button>
       <button class="main-tab" id="mt-source">📡 Kaynak</button>
+      <button class="main-tab" id="mt-calendar">📅 Takvim</button>
     </div>
     <div id="view-overview"><div class="cards-grid" id="cards-overview"></div><div class="team-compare" id="team-compare-wrap"></div><div class="table-wrap"><div class="tbl-head"><span class="tbl-head-title">🏆 Top 5 Performans</span></div><div id="top5-body"></div></div></div>
     <div id="view-sales" style="display:none"><div class="cards-grid" id="cards-sales"></div><div class="table-wrap"><div class="tbl-head"><span class="tbl-head-title">💼 Satış Ekibi</span><span id="sales-count" style="font-size:11px;color:#475569"></span></div><div id="sales-body"></div></div></div>
@@ -218,6 +219,59 @@ input{font-family:'DM Sans',sans-serif}
         <div id="source-body"></div>
       </div>
     </div>
+
+    <!-- TAKVİM -->
+    <div id="view-calendar" style="display:none">
+      <!-- Ay navigasyon -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <button id="cal-prev" style="background:#0d1b2e;border:1px solid #1e293b;border-radius:8px;color:#94a3b8;padding:6px 12px;font-size:13px">‹</button>
+          <span id="cal-month-label" style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#f1f5f9"></span>
+          <button id="cal-next" style="background:#0d1b2e;border:1px solid #1e293b;border-radius:8px;color:#94a3b8;padding:6px 12px;font-size:13px">›</button>
+          <button id="cal-today" style="background:#1d4ed8;border:none;border-radius:8px;color:#bfdbfe;padding:6px 12px;font-size:11px;font-weight:700">Bugün</button>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="cal-user-filter"></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:16px" id="cal-layout">
+        <!-- Mini Takvim -->
+        <div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:8px">
+            <div style="text-align:center;font-size:10px;font-weight:700;color:#334155;padding:4px">Pt</div>
+            <div style="text-align:center;font-size:10px;font-weight:700;color:#334155;padding:4px">Sa</div>
+            <div style="text-align:center;font-size:10px;font-weight:700;color:#334155;padding:4px">Ça</div>
+            <div style="text-align:center;font-size:10px;font-weight:700;color:#334155;padding:4px">Pe</div>
+            <div style="text-align:center;font-size:10px;font-weight:700;color:#334155;padding:4px">Cu</div>
+            <div style="text-align:center;font-size:10px;font-weight:700;color:#475569;padding:4px">Ct</div>
+            <div style="text-align:center;font-size:10px;font-weight:700;color:#475569;padding:4px">Pz</div>
+          </div>
+          <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
+        </div>
+
+        <!-- Günlük Detay -->
+        <div>
+          <div style="background:#0d1b2e;border:1px solid #1e293b;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;border-bottom:1px solid #1e293b;display:flex;justify-content:space-between;align-items:center">
+              <span id="cal-detail-title" style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#f1f5f9">Gün Seçin</span>
+              <span id="cal-detail-count" style="font-size:11px;color:#475569"></span>
+            </div>
+            <div id="cal-detail-body" style="max-height:500px;overflow-y:auto">
+              <div style="padding:32px;text-align:center;color:#1e293b;font-size:12px">Bir güne tıklayın</div>
+            </div>
+          </div>
+
+          <!-- Söyledi mi / Yaptı mı -->
+          <div style="background:#0d1b2e;border:1px solid #1e293b;border-radius:12px;overflow:hidden;margin-top:12px">
+            <div style="padding:12px 16px;border-bottom:1px solid #1e293b">
+              <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#f1f5f9">🔍 Söyledi mi / Yaptı mı?</span>
+            </div>
+            <div id="cal-verify-body" style="max-height:400px;overflow-y:auto">
+              <div style="padding:32px;text-align:center;color:#1e293b;font-size:12px">Takvim yüklenince görüntülenecek</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <script>
@@ -239,7 +293,10 @@ document.getElementById('p10').addEventListener('click',function(){setQuick('p10
 document.getElementById('p30').addEventListener('click',function(){setQuick('p30',30);});
 document.getElementById('btn-custom-apply').addEventListener('click',function(){var v=parseInt(document.getElementById('custom-days').value,10);if(isNaN(v)||v<1)return;customDays=v;setActivePill('custom');if(webhookUrl)loadData();});
 document.getElementById('custom-days').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('btn-custom-apply').click();});
-['overview','sales','tech','activities','deals','lost','trend','target','source'].forEach(function(k){document.getElementById('mt-'+k).addEventListener('click',function(){setMainTab(k);});});
+['overview','sales','tech','activities','deals','lost','trend','target','source','calendar'].forEach(function(k){document.getElementById('mt-'+k).addEventListener('click',function(){setMainTab(k);});});
+document.getElementById('cal-prev').addEventListener('click',function(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();});
+document.getElementById('cal-next').addEventListener('click',function(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();});
+document.getElementById('cal-today').addEventListener('click',function(){var n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();calSelectedDay=new Date();renderCalendar();});
 document.getElementById('at-contacts').addEventListener('click',function(){currentActTab='contacts';renderActivities();});
 document.getElementById('at-companies').addEventListener('click',function(){currentActTab='companies';renderActivities();});
 ['all','won','lost','changed'].forEach(function(k){document.getElementById('dt-'+k).addEventListener('click',function(){currentDealTab=k;renderDealsView();});});
@@ -524,6 +581,249 @@ function utHtml(users,compact){
 
 function renderCards(id,items){document.getElementById(id).innerHTML=items.map(function(c){return'<div class="card" onmouseenter="this.style.borderColor=\''+c.color+'\'" onmouseleave="this.style.borderColor=\'#1e293b\'"><div class="card-icon">'+c.icon+'</div><div class="card-label">'+c.label+'</div><div class="card-value">'+c.value+'</div>'+(c.sub?'<div class="card-sub" style="color:'+c.color+'">'+c.sub+'</div>':'')+'</div>';}).join('');}
 
+
+// ═══════════════════════════════════════════════════════
+// TAKVİM
+// ═══════════════════════════════════════════════════════
+var calYear = new Date().getFullYear();
+var calMonth = new Date().getMonth();
+var calSelectedDay = new Date();
+var calEvents = []; // tüm etkinlikler
+var calLoading = false;
+
+var MONTH_NAMES = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+var CAL_COLORS = ['#3b82f6','#22c55e','#f59e0b','#a78bfa','#f87171','#34d399','#fb923c','#38bdf8','#e879f9','#4ade80'];
+
+function fmtCalDate(iso) {
+  if(!iso) return '';
+  // Bitrix24 format: "05/18/2026 09:00:00"
+  var parts = iso.split(' ');
+  var dateParts = parts[0].split('/');
+  return dateParts[2]+'-'+dateParts[0]+'-'+dateParts[1]; // YYYY-MM-DD
+}
+
+function calDateKey(dateStr) {
+  // YYYY-MM-DD formatı döndür
+  var d = new Date(dateStr);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+async function loadCalendarEvents() {
+  if(!webhookUrl || calLoading) return;
+  calLoading = true;
+
+  // Ay başı ve sonu
+  var start = new Date(calYear, calMonth, 1);
+  var end = new Date(calYear, calMonth+1, 0);
+  var startStr = start.toISOString().slice(0,10);
+  var endStr = end.toISOString().slice(0,10);
+
+  var allEvents = [];
+  // Tüm kullanıcıların takvimlerini çek
+  var users = (currentData && currentData.users) ? currentData.users : [];
+  
+  try {
+    // Önce şirket takvimi
+    var res = await b24('calendar.event.get', {type:'company', ownerId:0, dateFrom:startStr, dateTo:endStr});
+    if(res && Array.isArray(res)) allEvents = allEvents.concat(res.map(function(e){e._calType='company';return e;}));
+    
+    // Her kullanıcının takvimi
+    for(var i=0; i<Math.min(users.length,20); i++) {
+      try {
+        var ures = await b24('calendar.event.get', {type:'user', ownerId:users[i].ID, dateFrom:startStr, dateTo:endStr});
+        if(ures && Array.isArray(ures)) {
+          ures.forEach(function(e){ e._userId=users[i].ID; e._userName=((users[i].NAME||'')+' '+(users[i].LAST_NAME||'')).trim(); e._calType='user'; });
+          allEvents = allEvents.concat(ures);
+        }
+      } catch(e){}
+    }
+  } catch(e) { console.error('Calendar error:', e); }
+
+  // Tekrarları kaldır (aynı ID)
+  var seen = {};
+  calEvents = allEvents.filter(function(e){
+    var key = e.ID+'_'+e.OWNER_ID;
+    if(seen[key]) return false;
+    seen[key] = true;
+    return true;
+  });
+
+  calLoading = false;
+  renderCalendarGrid();
+  renderCalVerify();
+}
+
+function getEventsForDay(dateStr) {
+  // dateStr: YYYY-MM-DD
+  return calEvents.filter(function(e) {
+    var from = fmtCalDate(e.DATE_FROM);
+    var to = fmtCalDate(e.DATE_TO);
+    return dateStr >= from && dateStr <= to;
+  });
+}
+
+function renderCalendar() {
+  var now = new Date();
+  document.getElementById('cal-month-label').textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
+  
+  // Kullanıcı filtresi
+  if(currentData && currentData.users) {
+    var filterHtml = currentData.users.slice(0,8).map(function(u,i) {
+      var hue = (parseInt(u.ID,10)*47)%360;
+      return '<div style="width:28px;height:28px;border-radius:50%;background:hsl('+hue+',55%,38%);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;title=''+((u.NAME||'')+' '+(u.LAST_NAME||'')).trim()+''">'+u.NAME.charAt(0)+'</div>';
+    }).join('');
+    document.getElementById('cal-user-filter').innerHTML = filterHtml;
+  }
+
+  loadCalendarEvents().then(function() {
+    renderCalendarGrid();
+    renderDayDetail(calSelectedDay);
+  });
+}
+
+function renderCalendarGrid() {
+  var firstDay = new Date(calYear, calMonth, 1).getDay();
+  // Pazartesi bazlı (0=Pzt, 6=Pz)
+  var startOffset = firstDay === 0 ? 6 : firstDay - 1;
+  var daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  var today = new Date();
+  var todayKey = calDateKey(today.toISOString());
+  var selectedKey = calDateKey(calSelectedDay.toISOString());
+
+  var html = '';
+  // Önceki ayın günleri
+  for(var i=0; i<startOffset; i++) {
+    html += '<div style="min-height:70px;border-radius:8px;background:#0a1220;border:1px solid #0f172a"></div>';
+  }
+
+  for(var d=1; d<=daysInMonth; d++) {
+    var dateKey = calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var dayEvents = getEventsForDay(dateKey);
+    var isToday = dateKey === todayKey;
+    var isSelected = dateKey === selectedKey;
+    var isWeekend = new Date(calYear, calMonth, d).getDay() === 0 || new Date(calYear, calMonth, d).getDay() === 6;
+
+    var bg = isSelected ? '#1e3a5f' : isToday ? '#0f172a' : '#0d1b2e';
+    var border = isSelected ? '1px solid #3b82f6' : isToday ? '1px solid #334155' : '1px solid #1e293b';
+    var dayColor = isToday ? '#60a5fa' : isWeekend ? '#475569' : '#94a3b8';
+
+    var eventsHtml = dayEvents.slice(0,3).map(function(e,i) {
+      var color = CAL_COLORS[i % CAL_COLORS.length];
+      return '<div style="font-size:9px;color:'+color+';background:'+color+'18;border-radius:3px;padding:1px 4px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+e.NAME+'</div>';
+    }).join('');
+    if(dayEvents.length > 3) eventsHtml += '<div style="font-size:9px;color:#475569;margin-top:1px">+' + (dayEvents.length-3) + ' daha</div>';
+
+    html += '<div onclick="selectCalDay('+calYear+','+calMonth+','+d+')" style="min-height:70px;border-radius:8px;background:'+bg+';border:'+border+';padding:6px;cursor:pointer;transition:border-color .15s" onmouseenter="this.style.borderColor='#3b82f6'" onmouseleave="this.style.borderColor=''+(isSelected?'#3b82f6':isToday?'#334155':'#1e293b')+''">'+
+      '<div style="font-size:12px;font-weight:'+(isToday?'800':'600')+';color:'+dayColor+';margin-bottom:2px">'+d+'</div>'+
+      eventsHtml+
+    '</div>';
+  }
+
+  document.getElementById('cal-grid').innerHTML = html;
+}
+
+function selectCalDay(y, m, d) {
+  calSelectedDay = new Date(y, m, d);
+  calYear = y; calMonth = m;
+  renderCalendarGrid();
+  renderDayDetail(calSelectedDay);
+}
+
+function renderDayDetail(date) {
+  var dateKey = calDateKey(date.toISOString());
+  var dayEvents = getEventsForDay(dateKey);
+  var dayName = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'][date.getDay()];
+  var dayStr = dayName + ', ' + date.getDate() + ' ' + MONTH_NAMES[date.getMonth()] + ' ' + date.getFullYear();
+  
+  document.getElementById('cal-detail-title').textContent = dayStr;
+  document.getElementById('cal-detail-count').textContent = dayEvents.length + ' etkinlik';
+
+  if(!dayEvents.length) {
+    document.getElementById('cal-detail-body').innerHTML = '<div style="padding:24px;text-align:center;color:#1e293b;font-size:12px">Bu gün etkinlik yok</div>';
+    return;
+  }
+
+  var sorted = dayEvents.slice().sort(function(a,b){
+    return new Date(a.DATE_FROM) - new Date(b.DATE_FROM);
+  });
+
+  var html = sorted.map(function(e) {
+    var isAllDay = e.DT_SKIP_TIME === 'Y';
+    var timeStr = isAllDay ? 'Tüm Gün' : (e.DATE_FROM ? e.DATE_FROM.split(' ')[1]?.slice(0,5) : '');
+    var endTime = isAllDay ? '' : (e.DATE_TO ? e.DATE_TO.split(' ')[1]?.slice(0,5) : '');
+    var owner = e._userName || ('Kullanıcı #' + e.OWNER_ID);
+    var color = '#3b82f6';
+    if(e._calType === 'company') color = '#f59e0b';
+
+    return '<div style="padding:12px 16px;border-bottom:1px solid #0f172a;display:flex;gap:12px;align-items:flex-start">'+
+      '<div style="width:3px;min-height:40px;border-radius:2px;background:'+color+';flex-shrink:0;margin-top:2px"></div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="color:#e2e8f0;font-size:13px;font-weight:600;margin-bottom:3px">'+e.NAME+'</div>'+
+        '<div style="color:#475569;font-size:11px">'+
+          (timeStr ? '🕐 '+timeStr+(endTime?' – '+endTime:'') : '')+
+          (e.LOCATION ? ' · 📍 '+e.LOCATION : '')+
+        '</div>'+
+        '<div style="color:#334155;font-size:10px;margin-top:2px">👤 '+owner+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  document.getElementById('cal-detail-body').innerHTML = html;
+}
+
+function renderCalVerify() {
+  // "Söyledi mi / Yaptı mı?" — takvim etkinliklerini CRM aktiviteleriyle karşılaştır
+  if(!currentData) return;
+
+  var now = new Date();
+  var weekAgo = new Date(now); weekAgo.setDate(now.getDate()-7);
+
+  // Son 7 günün etkinliklerini al
+  var recentEvents = calEvents.filter(function(e) {
+    var from = new Date(fmtCalDate(e.DATE_FROM));
+    return from >= weekAgo && from <= now;
+  });
+
+  if(!recentEvents.length) {
+    document.getElementById('cal-verify-body').innerHTML = '<div style="padding:24px;text-align:center;color:#1e293b;font-size:12px">Son 7 günde etkinlik bulunamadı</div>';
+    return;
+  }
+
+  var html = recentEvents.map(function(e) {
+    var eventDate = fmtCalDate(e.DATE_FROM);
+    var userId = e._userId || e.OWNER_ID;
+    var owner = e._userName || ('Kullanıcı #'+userId);
+
+    // O gün o kullanıcının CRM aktivitesi var mı?
+    var dayActs = (currentData.actContacts || []).concat(currentData.actCompanies || []).filter(function(a) {
+      var actDate = a.CREATED ? a.CREATED.slice(0,10) : '';
+      return actDate === eventDate && a.RESPONSIBLE_ID === userId;
+    });
+
+    var hasCrmActivity = dayActs.length > 0;
+    var isPast = new Date(eventDate) < now;
+
+    var status, statusColor, statusBg;
+    if(!isPast) {
+      status = '⏳ Planlı'; statusColor = '#93c5fd'; statusBg = '#1e3a5f';
+    } else if(hasCrmActivity) {
+      status = '✅ Yaptı'; statusColor = '#4ade80'; statusBg = '#14532d';
+    } else {
+      status = '❌ CRM Kaydı Yok'; statusColor = '#f87171'; statusBg = '#450a0a';
+    }
+
+    return '<div style="padding:10px 16px;border-bottom:1px solid #0f172a;display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+      '<div style="min-width:0">'+
+        '<div style="color:#e2e8f0;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+e.NAME+'</div>'+
+        '<div style="color:#475569;font-size:10px;margin-top:2px">'+owner+' · '+eventDate+(hasCrmActivity?' · '+dayActs.length+' aktivite':'')+'</div>'+
+      '</div>'+
+      '<span style="background:'+statusBg+';color:'+statusColor+';font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;white-space:nowrap;flex-shrink:0">'+status+'</span>'+
+    '</div>';
+  }).join('');
+
+  document.getElementById('cal-verify-body').innerHTML = html;
+}
+
 // Kaynak eşleme - Bitrix24 SOURCE_ID → 3 ana kategori
 var SOURCE_MAP = {
   // ÖZSATIŞ — Satış ekibinin kendisi buldu
@@ -639,7 +939,7 @@ function renderSource() {
   document.getElementById('source-body').innerHTML = html;
 }
 
-function setMainTab(t){currentMainTab=t;['overview','sales','tech','activities','deals','lost','trend','target','source'].forEach(function(k){document.getElementById('mt-'+k).classList.toggle('active',k===t);document.getElementById('view-'+k).style.display=k===t?'block':'none';});if(t==='trend'&&currentData)setTimeout(function(){renderTrend();},50);if(t==='source'&&currentData)renderSource();}
+function setMainTab(t){currentMainTab=t;['overview','sales','tech','activities','deals','lost','trend','target','source','calendar'].forEach(function(k){document.getElementById('mt-'+k).classList.toggle('active',k===t);document.getElementById('view-'+k).style.display=k===t?'block':'none';});if(t==='trend'&&currentData)setTimeout(function(){renderTrend();},50);if(t==='source'&&currentData)renderSource();if(t==='calendar')setTimeout(function(){renderCalendar();},50);}
 
 function showSpinner(){document.getElementById('spinner').style.display='flex';document.getElementById('dashboard').style.display='none';document.getElementById('empty').style.display='none';document.getElementById('error-box').style.display='none';}
 function hideSpinner(){document.getElementById('spinner').style.display='none';}
