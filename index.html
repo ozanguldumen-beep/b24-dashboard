@@ -164,7 +164,42 @@ input{font-family:'DM Sans',sans-serif}
 .sheet-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px;border-radius:12px;border:1px solid #1e293b;background:#0a1628;color:#e2e8f0;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;-webkit-tap-highlight-color:transparent}
 .sheet-btn:active{background:#1e293b}
 .sheet-btn span{font-size:22px;line-height:1}
-@media(prefers-color-scheme:light){.sheet-btn{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}#more-sheet{background:#fff!important;border-top-color:#e2e8f0!important}}
+@media(prefers-color-scheme:light){.sheet-btn{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}}
+
+/* ── MORE SHEET ──────────────────────────────────── */
+#more-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
+  z-index:400;-webkit-tap-highlight-color:transparent;
+}
+#more-overlay.open{display:block}
+#more-sheet{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:401;
+  background:#0d1b2e;border-top:1px solid #1e293b;
+  border-radius:24px 24px 0 0;
+  padding:12px 20px calc(env(safe-area-inset-bottom,0px) + 80px);
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);
+}
+#more-sheet.open{display:block;transform:translateY(0)}
+.sheet-handle{width:40px;height:5px;border-radius:3px;background:#334155;margin:0 auto 16px}
+.sheet-title{font-size:11px;color:#475569;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.sheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sheet-btn{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:14px 8px;border-radius:14px;border:1px solid #1e293b;
+  background:#0a1628;color:#e2e8f0;font-size:11px;font-weight:600;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:background .15s,transform .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.sheet-btn:active{background:#1e293b;transform:scale(.95)}
+.sheet-btn .sb-icon{font-size:26px;line-height:1}
+@media(prefers-color-scheme:light){
+  #more-sheet{background:#fff;border-top-color:#e2e8f0}
+  .sheet-btn{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}
+  .sheet-btn:active{background:#e2e8f0}
+}
+/* Hide on desktop */
+@media(min-width:901px){#more-sheet,#more-overlay{display:none!important}}
 
 /* ── BOTTOM NAV ───────────────────────────────────── */
 #bottom-nav{
@@ -178,11 +213,13 @@ input{font-family:'DM Sans',sans-serif}
   display:flex;flex-direction:column;align-items:center;gap:3px;
   padding:4px 6px;border:none;background:transparent;
   color:#475569;font-family:'DM Sans',sans-serif;cursor:pointer;
-  transition:color .15s;min-width:44px;min-height:44px;justify-content:center;
+  transition:color .15s,transform .1s;min-width:52px;min-height:52px;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
 }
+.bnav-item:active{transform:scale(.9)}
 .bnav-item.active{color:#3b82f6}
-.bnav-icon{font-size:22px;line-height:1}
-.bnav-label{font-size:9px;font-weight:600;letter-spacing:.3px}
+.bnav-icon{font-size:28px;line-height:1}
+.bnav-label{font-size:10px;font-weight:600;letter-spacing:.2px}
 .bnav-dot{width:5px;height:5px;border-radius:50%;background:#3b82f6;margin-top:1px}
 
 /* ── TABLET (768-900) ─────────────────────────────── */
@@ -1177,15 +1214,17 @@ function setMainTabMobile(t) {
   if(moreBtn) moreBtn.classList.toggle('active', !BNAV_TABS[t]);
 }
 
-function toggleMoreSheet() {
-  var sheet = document.getElementById('more-sheet');
-  var overlay = document.getElementById('more-overlay');
-  if(!sheet) return;
-  var isOpen = sheet.style.display !== 'none';
-  sheet.style.display = isOpen ? 'none' : 'block';
-  overlay.style.display = isOpen ? 'none' : 'block';
-  // Prevent body scroll when open
-  document.body.style.overflow = isOpen ? '' : 'hidden';
+
+// ── MORE SHEET ──────────────────────────────────────
+function openMoreSheet() {
+  document.getElementById('more-sheet').classList.add('open');
+  document.getElementById('more-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMoreSheet() {
+  document.getElementById('more-sheet').classList.remove('open');
+  document.getElementById('more-overlay').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 // PWA Service Worker
@@ -1216,16 +1255,27 @@ document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY
   <div class="nav-item" data-page="sales" onclick="goPage('sales')"><div class="nav-icon">💼</div><div class="nav-label">Satış</div></div>
   <div class="nav-item" data-page="deals" onclick="goPage('deals')"><div class="nav-icon">🤝</div><div class="nav-label">Anlaşma</div></div>
   <div class="nav-item" data-page="calendar" onclick="goPage('calendar')"><div class="nav-icon">📅</div><div class="nav-label">Takvim</div></div>
-  <div class="nav-item" id="nav-more" onclick="toggleMoreSheet()"><div class="nav-icon">⋯</div><div class="nav-label">Daha</div></div>
+  <div class="nav-item" id="nav-more" onclick="openMoreSheet()"><div class="nav-icon">⋯</div><div class="nav-label">Daha</div></div>
 </div>
-<!-- MORE SHEET -->
-<div class="more-overlay" id="more-overlay" onclick="closeMoreSheet()"></div>
-<div class="more-sheet" id="more-sheet">
-  <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px"></div>
-  <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px">Diğer Sayfalar</div>
-  <div class="more-grid" id="more-grid"></div>
-</div>
+
 <!-- PWA SW -->
+<!-- MORE SHEET -->
+<div id="more-overlay" onclick="closeMoreSheet()"></div>
+<div id="more-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">Diğer Sayfalar</div>
+  <div class="sheet-grid">
+    <button class="sheet-btn" onclick="setMainTabMobile('tech');closeMoreSheet()"><span class="sb-icon">🔧</span>Teknik</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('lost');closeMoreSheet()"><span class="sb-icon">❌</span>Kayıplar</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('trend');closeMoreSheet()"><span class="sb-icon">📈</span>Trend</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('target');closeMoreSheet()"><span class="sb-icon">🎯</span>Hedef</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('source');closeMoreSheet()"><span class="sb-icon">📡</span>Kaynak</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('calendar');closeMoreSheet()"><span class="sb-icon">📅</span>Takvim</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('verify');closeMoreSheet()"><span class="sb-icon">🔍</span>Yaptı mı?</button>
+    <button class="sheet-btn" onclick="document.getElementById('wh-input').value=webhookUrl;document.getElementById('modal').style.display='flex';closeMoreSheet()"><span class="sb-icon">⚙️</span>Ayarlar</button>
+  </div>
+</div>
+
 <!-- BOTTOM NAV (mobile only) -->
 <div id="bottom-nav">
   <button class="bnav-item active" id="bnav-overview" onclick="setMainTabMobile('overview')">
@@ -1244,43 +1294,15 @@ document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY
     <span class="bnav-icon">📋</span>
     <span class="bnav-label">Aktivite</span>
   </button>
-  <button class="bnav-item" id="bnav-more" onclick="toggleMoreSheet()">
+  <button class="bnav-item" id="bnav-more" onclick="openMoreSheet()">
     <span class="bnav-icon">⋯</span>
     <span class="bnav-label">Daha Fazla</span>
   </button>
 </div>
 
-<!-- MORE SHEET (mobile) -->
-<div id="more-overlay" onclick="toggleMoreSheet()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;-webkit-tap-highlight-color:transparent"></div>
-<div id="more-sheet" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:301;background:#0d1b2e;border-top:1px solid #1e293b;border-radius:20px 20px 0 0;padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 72px)">
-  <div style="width:36px;height:4px;border-radius:2px;background:#334155;margin:0 auto 14px"></div>
-  <div style="font-size:11px;color:#475569;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Diğer Sayfalar</div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
-    <button class="sheet-btn" onclick="setMainTabMobile('tech');toggleMoreSheet()"><span>🔧</span>Teknik</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('lost');toggleMoreSheet()"><span>❌</span>Kayıplar</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('trend');toggleMoreSheet()"><span>📈</span>Trend</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('target');toggleMoreSheet()"><span>🎯</span>Hedef</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('source');toggleMoreSheet()"><span>📡</span>Kaynak</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('calendar');toggleMoreSheet()"><span>📅</span>Takvim</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('verify');toggleMoreSheet()"><span>🔍</span>Yaptı mı?</button>
-    <button class="sheet-btn" onclick="document.getElementById('wh-input').value=webhookUrl;document.getElementById('modal').style.display='flex';toggleMoreSheet()"><span>⚙️</span>Ayarlar</button>
-  </div>
-</div>
+
 
 <script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
-
-// Theme system
-var _theme = localStorage.getItem('b24_theme') || (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
-document.documentElement.setAttribute('data-theme', _theme);
-
-function toggleTheme(){
-  _theme = _theme==='dark'?'light':'dark';
-  document.documentElement.setAttribute('data-theme',_theme);
-  localStorage.setItem('b24_theme',_theme);
-  var btn=document.getElementById('theme-toggle');
-  if(btn)btn.textContent=_theme==='dark'?'☀️':'🌙';
-}
 
 // Bottom nav
 var MORE_PAGES=[
@@ -1344,13 +1366,9 @@ function goPage(id){
 }
 
 function toggleMoreSheet(){
-  document.getElementById('more-sheet').classList.toggle('open');
-  document.getElementById('more-overlay').classList.toggle('open');
-}
+    }
 function closeMoreSheet(){
-  document.getElementById('more-sheet').classList.remove('open');
-  document.getElementById('more-overlay').classList.remove('open');
-}
+    }
 </script>
 
 </body>
