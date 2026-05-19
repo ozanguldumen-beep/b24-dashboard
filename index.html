@@ -161,6 +161,11 @@ input{font-family:'DM Sans',sans-serif}
   #login-page{background:linear-gradient(135deg,#eff6ff,#f0f9ff)}
 }
 
+.sheet-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px;border-radius:12px;border:1px solid #1e293b;background:#0a1628;color:#e2e8f0;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.sheet-btn:active{background:#1e293b}
+.sheet-btn span{font-size:22px;line-height:1}
+@media(prefers-color-scheme:light){.sheet-btn{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}#more-sheet{background:#fff!important;border-top-color:#e2e8f0!important}}
+
 /* ── BOTTOM NAV ───────────────────────────────────── */
 #bottom-nav{
   display:none;position:fixed;bottom:0;left:0;right:0;
@@ -1179,18 +1184,8 @@ function toggleMoreSheet() {
   var isOpen = sheet.style.display !== 'none';
   sheet.style.display = isOpen ? 'none' : 'block';
   overlay.style.display = isOpen ? 'none' : 'block';
-  // Apply light/dark theme to sheet
-  var isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
-  sheet.style.background = isDark ? '#0d1b2e' : '#ffffff';
-  sheet.style.borderTop = isDark ? '1px solid #1e293b' : '1px solid #e2e8f0';
-  // Update button styles for light mode
-  if(!isDark) {
-    sheet.querySelectorAll('button').forEach(function(b){
-      b.style.background = '#f8fafc';
-      b.style.borderColor = '#e2e8f0';
-      b.style.color = '#0f172a';
-    });
-  }
+  // Prevent body scroll when open
+  document.body.style.overflow = isOpen ? '' : 'hidden';
 }
 
 // PWA Service Worker
@@ -1256,34 +1251,19 @@ document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY
 </div>
 
 <!-- MORE SHEET (mobile) -->
-<div id="more-overlay" onclick="toggleMoreSheet()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300"></div>
-<div id="more-sheet" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:301;border-radius:20px 20px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 16px)">
-  <div style="width:36px;height:4px;border-radius:2px;background:#334155;margin:0 auto 16px"></div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-    <button onclick="setMainTabMobile('tech');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
-      <span style="font-size:22px">🔧</span>Teknik
-    </button>
-    <button onclick="setMainTabMobile('lost');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
-      <span style="font-size:22px">❌</span>Kayıplar
-    </button>
-    <button onclick="setMainTabMobile('trend');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
-      <span style="font-size:22px">📈</span>Trend
-    </button>
-    <button onclick="setMainTabMobile('target');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
-      <span style="font-size:22px">🎯</span>Hedef
-    </button>
-    <button onclick="setMainTabMobile('source');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
-      <span style="font-size:22px">📡</span>Kaynak
-    </button>
-    <button onclick="setMainTabMobile('calendar');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
-      <span style="font-size:22px">📅</span>Takvim
-    </button>
-    <button onclick="setMainTabMobile('verify');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
-      <span style="font-size:22px">🔍</span>Yaptı mı?
-    </button>
-    <button onclick="document.getElementById('wh-input').value=webhookUrl;document.getElementById('modal').style.display='flex';toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
-      <span style="font-size:22px">⚙️</span>Ayarlar
-    </button>
+<div id="more-overlay" onclick="toggleMoreSheet()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;-webkit-tap-highlight-color:transparent"></div>
+<div id="more-sheet" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:301;background:#0d1b2e;border-top:1px solid #1e293b;border-radius:20px 20px 0 0;padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 72px)">
+  <div style="width:36px;height:4px;border-radius:2px;background:#334155;margin:0 auto 14px"></div>
+  <div style="font-size:11px;color:#475569;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Diğer Sayfalar</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+    <button class="sheet-btn" onclick="setMainTabMobile('tech');toggleMoreSheet()"><span>🔧</span>Teknik</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('lost');toggleMoreSheet()"><span>❌</span>Kayıplar</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('trend');toggleMoreSheet()"><span>📈</span>Trend</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('target');toggleMoreSheet()"><span>🎯</span>Hedef</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('source');toggleMoreSheet()"><span>📡</span>Kaynak</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('calendar');toggleMoreSheet()"><span>📅</span>Takvim</button>
+    <button class="sheet-btn" onclick="setMainTabMobile('verify');toggleMoreSheet()"><span>🔍</span>Yaptı mı?</button>
+    <button class="sheet-btn" onclick="document.getElementById('wh-input').value=webhookUrl;document.getElementById('modal').style.display='flex';toggleMoreSheet()"><span>⚙️</span>Ayarlar</button>
   </div>
 </div>
 
