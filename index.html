@@ -384,7 +384,7 @@ function fetchNames(){
   if(allContactIds.length)ps.push(b24('crm.contact.list',{filter:{ID:allContactIds},select:['ID','NAME','LAST_NAME']}).then(function(r){(r||[]).forEach(function(c){currentData['_c_'+c.ID]=((c.NAME||'')+' '+(c.LAST_NAME||'')).trim();});}).catch(function(){}));
   if(allCoIds.length)ps.push(b24('crm.company.list',{filter:{ID:allCoIds},select:['ID','TITLE']}).then(function(r){(r||[]).forEach(function(c){currentData['_co_'+c.ID]=c.TITLE||'';});}).catch(function(){}));
   // Pipeline aşama adları
-  ps.push(b24('crm.stage.list',{}).then(function(r){
+  ps.push(b24('crm.status.list',{filter:{ENTITY_ID:'DEAL_STAGE'}}).then(function(r){
     currentData._stages={};
     (r||[]).forEach(function(s){currentData._stages[s.STATUS_ID]=s.NAME;});
   }).catch(function(){}));
