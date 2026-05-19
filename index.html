@@ -187,6 +187,7 @@ input{font-family:'DM Sans',sans-serif}
       <button class="main-tab" id="mt-target">🎯 Hedef</button>
       <button class="main-tab" id="mt-source">📡 Kaynak</button>
       <button class="main-tab" id="mt-calendar">📅 Takvim</button>
+      <button class="main-tab" id="mt-verify">🔍 Yaptı mı?</button>
     </div>
     <div id="view-overview"><div class="cards-grid" id="cards-overview"></div><div class="team-compare" id="team-compare-wrap"></div><div class="table-wrap"><div class="tbl-head"><span class="tbl-head-title">🏆 Top 5 Performans</span></div><div id="top5-body"></div></div></div>
     <div id="view-sales" style="display:none"><div class="cards-grid" id="cards-sales"></div><div class="table-wrap"><div class="tbl-head"><span class="tbl-head-title">💼 Satış Ekibi</span><span id="sales-count" style="font-size:11px;color:#475569"></span></div><div id="sales-body"></div></div></div>
@@ -217,6 +218,23 @@ input{font-family:'DM Sans',sans-serif}
       <div class="table-wrap">
         <div class="tbl-head"><span class="tbl-head-title">📡 Kaynak Bazlı Anlaşmalar</span><span id="source-count" style="font-size:11px;color:#475569"></span></div>
         <div id="source-body"></div>
+      </div>
+    </div>
+
+    <!-- YAPTI MI? -->
+    <div id="view-verify" style="display:none">
+      <div style="background:#0d1b2e;border:1px solid #1e293b;border-radius:12px;overflow:hidden;margin-bottom:16px">
+        <div style="padding:14px 18px;border-bottom:1px solid #1e293b;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:#f1f5f9">🔍 Söyledi mi / Yaptı mı?</span>
+          <div style="display:flex;gap:6px">
+            <button id="verify-7" class="pill active" onclick="setVerifyRange(7)">Son 7 Gün</button>
+            <button id="verify-14" class="pill" onclick="setVerifyRange(14)">Son 14 Gün</button>
+            <button id="verify-30" class="pill" onclick="setVerifyRange(30)">Son 30 Gün</button>
+          </div>
+        </div>
+        <div id="cal-verify-body" style="max-height:600px;overflow-y:auto">
+          <div style="padding:32px;text-align:center;color:#1e293b;font-size:12px">Takvim sekmesinden veri yüklendikten sonra görüntülenir</div>
+        </div>
       </div>
     </div>
 
@@ -260,15 +278,7 @@ input{font-family:'DM Sans',sans-serif}
             </div>
           </div>
 
-          <!-- Söyledi mi / Yaptı mı -->
-          <div style="background:#0d1b2e;border:1px solid #1e293b;border-radius:12px;overflow:hidden;margin-top:12px">
-            <div style="padding:12px 16px;border-bottom:1px solid #1e293b">
-              <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#f1f5f9">🔍 Söyledi mi / Yaptı mı?</span>
-            </div>
-            <div id="cal-verify-body" style="max-height:400px;overflow-y:auto">
-              <div style="padding:32px;text-align:center;color:#1e293b;font-size:12px">Takvim yüklenince görüntülenecek</div>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
@@ -293,7 +303,7 @@ document.getElementById('p10').addEventListener('click',function(){setQuick('p10
 document.getElementById('p30').addEventListener('click',function(){setQuick('p30',30);});
 document.getElementById('btn-custom-apply').addEventListener('click',function(){var v=parseInt(document.getElementById('custom-days').value,10);if(isNaN(v)||v<1)return;customDays=v;setActivePill('custom');if(webhookUrl)loadData();});
 document.getElementById('custom-days').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('btn-custom-apply').click();});
-['overview','sales','tech','activities','deals','lost','trend','target','source','calendar'].forEach(function(k){document.getElementById('mt-'+k).addEventListener('click',function(){setMainTab(k);});});
+['overview','sales','tech','activities','deals','lost','trend','target','source','calendar','verify'].forEach(function(k){document.getElementById('mt-'+k).addEventListener('click',function(){setMainTab(k);});});
 document.getElementById('cal-prev').addEventListener('click',function(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();});
 document.getElementById('cal-next').addEventListener('click',function(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();});
 document.getElementById('cal-today').addEventListener('click',function(){var n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();calSelectedDay=new Date();renderCalendar();});
@@ -332,12 +342,12 @@ function loadData(){
     b24('crm.category.list',{entityTypeId:2}).then(function(r){var cats=(r&&r.categories)||[];CHANNEL_NAMES={};cats.forEach(function(c){CHANNEL_NAMES[String(c.id)]=c.name;});return[{id:'all',name:'Tüm Kanallar'}].concat(cats.map(function(c){return{id:String(c.id),name:c.name};}));}).catch(function(){return[{id:'all',name:'Tüm Kanallar'}];}),
     b24('department.get',{}).then(function(r){return Array.isArray(r)?r:(r&&r.result||[]);}).catch(function(){return[];}),
     b24All('user.get',{ACTIVE:true}).catch(function(){return[];}),
-    b24All('crm.deal.list',{filter:df,select:['ID','TITLE','STAGE_ID','OPPORTUNITY','ASSIGNED_BY_ID','DATE_CREATE','DATE_MODIFY','CATEGORY_ID','STAGE_SEMANTIC_ID','SOURCE_ID']}).catch(function(){return[];}),
+    b24All('crm.deal.list',{filter:df,select:['ID','TITLE','STAGE_ID','OPPORTUNITY','ASSIGNED_BY_ID','DATE_CREATE','DATE_MODIFY','CATEGORY_ID','STAGE_SEMANTIC_ID','SOURCE_ID','COMPANY_ID','CONTACT_ID','UF_CRM_*']}).catch(function(){return[];}),
     b24All('crm.activity.list',{filter:{'>=CREATED':range.start,'<=CREATED':range.end,'OWNER_TYPE_ID':'3','!=TYPE_ID':'1'},select:['ID','SUBJECT','TYPE_ID','RESPONSIBLE_ID','CREATED','OWNER_ID','COMPLETED']}).catch(function(){return[];}),
     b24All('crm.activity.list',{filter:{'>=CREATED':range.start,'<=CREATED':range.end,'OWNER_TYPE_ID':'4','!=TYPE_ID':'1'},select:['ID','SUBJECT','TYPE_ID','RESPONSIBLE_ID','CREATED','OWNER_ID','COMPLETED']}).catch(function(){return[];}),
     b24All('tasks.task.list',{filter:{'>=CREATED_DATE':range.start,'<=CREATED_DATE':range.end},select:['id','title','status','responsible','createdDate']}).then(function(r){return r&&r.tasks?r.tasks:(r||[]);}).catch(function(){return[];}),
     b24All('voximplant.statistic.get',{FILTER:{'>=CALL_START_DATE':range.start,'<=CALL_START_DATE':range.end}}).catch(function(){methodWarnings['telephony']=true;return[];}),
-    b24All('crm.deal.list',{filter:{'>=DATE_MODIFY':range.start,'<=DATE_MODIFY':range.end,'<DATE_CREATE':range.start},select:['ID','TITLE','STAGE_ID','OPPORTUNITY','ASSIGNED_BY_ID','DATE_CREATE','DATE_MODIFY','STAGE_SEMANTIC_ID','CATEGORY_ID']}).catch(function(){return[];}),
+    b24All('crm.deal.list',{filter:{'>=DATE_MODIFY':range.start,'<=DATE_MODIFY':range.end,'<DATE_CREATE':range.start},select:['ID','TITLE','STAGE_ID','OPPORTUNITY','ASSIGNED_BY_ID','DATE_CREATE','DATE_MODIFY','STAGE_SEMANTIC_ID','CATEGORY_ID','COMPANY_ID','SOURCE_ID']}).catch(function(){return[];}),
     b24All('crm.deal.list',{filter:{'>=DATE_CREATE':tws.toISOString(),'<=DATE_CREATE':now.toISOString()},select:['ID','DATE_CREATE']}).catch(function(){return[];}),
     b24All('crm.deal.list',{filter:{'>=DATE_CREATE':lws.toISOString(),'<=DATE_CREATE':lwe.toISOString()},select:['ID','DATE_CREATE']}).catch(function(){return[];}),
     b24All('voximplant.statistic.get',{FILTER:{'>=CALL_START_DATE':tws.toISOString(),'<=CALL_START_DATE':now.toISOString()}}).catch(function(){return[];}),
@@ -352,9 +362,16 @@ function fetchNames(){
   var cIds=[],coIds=[];
   currentData.actContacts.forEach(function(a){if(a.OWNER_ID&&cIds.indexOf(a.OWNER_ID)===-1)cIds.push(a.OWNER_ID);});
   currentData.actCompanies.forEach(function(a){if(a.OWNER_ID&&coIds.indexOf(a.OWNER_ID)===-1)coIds.push(a.OWNER_ID);});
+  // Deal'lerdeki şirket ID'leri
+  var dealCoIds=[];
+  currentData.deals.forEach(function(d){if(d.COMPANY_ID&&dealCoIds.indexOf(d.COMPANY_ID)===-1)dealCoIds.push(d.COMPANY_ID);});
+  (currentData.dealChanges||[]).forEach(function(d){if(d.COMPANY_ID&&dealCoIds.indexOf(d.COMPANY_ID)===-1)dealCoIds.push(d.COMPANY_ID);});
+  var allCoIds=coIds.slice();
+  dealCoIds.forEach(function(id){if(allCoIds.indexOf(id)===-1)allCoIds.push(id);});
+
   var ps=[];
   if(cIds.length)ps.push(b24('crm.contact.list',{filter:{ID:cIds},select:['ID','NAME','LAST_NAME']}).then(function(r){(r||[]).forEach(function(c){currentData['_c_'+c.ID]=((c.NAME||'')+' '+(c.LAST_NAME||'')).trim();});}).catch(function(){}));
-  if(coIds.length)ps.push(b24('crm.company.list',{filter:{ID:coIds},select:['ID','TITLE']}).then(function(r){(r||[]).forEach(function(c){currentData['_co_'+c.ID]=c.TITLE||'';});}).catch(function(){}));
+  if(allCoIds.length)ps.push(b24('crm.company.list',{filter:{ID:allCoIds},select:['ID','TITLE','CITY']}).then(function(r){(r||[]).forEach(function(c){currentData['_co_'+c.ID]=c.TITLE||'';currentData['_city_'+c.ID]=c.CITY||'';});}).catch(function(){}));
   return Promise.all(ps);
 }
 
@@ -476,8 +493,8 @@ function renderDealsView(){
   var titles={all:'Tüm Anlaşmalar',won:'Kazanılan',lost:'Kaybedilen',changed:'Aşama Değişen'};
   document.getElementById('deal-title').textContent=titles[currentDealTab]+' ('+show.length+')';
   document.getElementById('deal-stats').innerHTML='<span style="color:#4ade80">✓ '+won.length+'</span><span style="color:#f87171">✗ '+lost.length+'</span><span style="color:#93c5fd">◑ '+(d.deals.length-won.length-lost.length)+'</span><span style="color:#e879f9">↕ '+d.dealChanges.length+'</span>';
-  var cols='1fr 100px 90px 100px 90px 90px';
-  var html='<div class="col-heads" style="grid-template-columns:'+cols+';gap:6px">'+['Anlaşma','Sorumlu','Kanal','Tutar (USD)','Durum','Tarih'].map(function(h){return'<div class="col-head">'+h+'</div>';}).join('')+'</div>';
+  var cols='1fr 90px 80px 100px 80px 80px 80px';
+  var html='<div class="col-heads" style="grid-template-columns:'+cols+';gap:6px">'+['Anlaşma','Sorumlu','Kanal','Tutar (USD)','Durum','Şehir','Tarih'].map(function(h){return'<div class="col-head">'+h+'</div>';}).join('')+'</div>';
   if(!show.length){html+='<div class="empty-row">Bu dönem için kayıt yok.</div>';}
   else{show.slice().sort(function(a,b){return new Date(b.DATE_MODIFY||b.DATE_CREATE)-new Date(a.DATE_MODIFY||a.DATE_CREATE);}).forEach(function(deal){
     var user=null;d.users.forEach(function(u){if(u.ID===deal.ASSIGNED_BY_ID)user=u;});
@@ -487,12 +504,17 @@ function renderDealsView(){
     var fc=isWon?'#4ade80':isLost?'#f87171':isCh?'#a78bfa':'#93c5fd';
     var bt=isWon?'Kazanıldı':isLost?'Kaybedildi':isCh?'↕ Güncellendi':'Devam';
     var df=isCh?(deal.DATE_MODIFY||deal.DATE_CREATE):deal.DATE_CREATE;
+    var coName=deal.COMPANY_ID?(currentData['_co_'+deal.COMPANY_ID]||''):'';
+    var city=deal.COMPANY_ID?(currentData['_city_'+deal.COMPANY_ID]||''):'';
     html+='<div class="tbl-row" style="grid-template-columns:'+cols+';gap:6px">'+
-      '<div style="color:#e2e8f0;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+deal.TITLE+'</div>'+
+      '<div><div style="color:#e2e8f0;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+deal.TITLE+'</div>'+
+      (coName?'<div style="color:#475569;font-size:10px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🏢 '+coName+'</div>':'')+
+      '</div>'+
       '<span style="color:#64748b;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+name+'</span>'+
       '<span class="ch-tag" style="background:#0f172a;color:#64748b;border:1px solid #1e293b">'+getChName(deal.CATEGORY_ID)+'</span>'+
       '<span style="color:#22c55e;font-weight:700;font-size:12px;font-family:monospace">'+fmtUSD(deal.OPPORTUNITY)+'</span>'+
       '<span class="badge" style="background:'+bg+';color:'+fc+'">'+bt+'</span>'+
+      '<span style="color:#94a3b8;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(city||'—')+'</span>'+
       '<div style="color:#94a3b8;font-size:11px"><div>'+fmtDate(df)+'</div><div style="color:#334155;margin-top:1px">'+fmtTime(df)+'</div></div></div>';
   });}
   document.getElementById('deals-body').innerHTML=html;
@@ -503,8 +525,8 @@ function renderLost(lostDeals,lv){
     '<div class="lost-card"><div class="lost-card-label">Kayıp Anlaşma</div><div class="lost-card-value">'+lostDeals.length+'</div><div class="lost-card-sub">adet</div></div>'+
     '<div class="lost-card"><div class="lost-card-label">Kaybedilen Gelir</div><div class="lost-card-value">'+fmtUSD(lv)+'</div><div class="lost-card-sub">potansiyel</div></div>'+
     '<div class="lost-card"><div class="lost-card-label">Ort. Kayıp</div><div class="lost-card-value">'+(lostDeals.length>0?fmtUSD(Math.round(lv/lostDeals.length)):'—')+'</div><div class="lost-card-sub">anlaşma başı</div></div>';
-  var d=currentData,cols='1fr 100px 90px 100px 90px 90px';
-  var html='<div class="col-heads" style="grid-template-columns:'+cols+';gap:6px">'+['Anlaşma','Sorumlu','Kanal','Tutar (USD)','Aşama','Tarih'].map(function(h){return'<div class="col-head">'+h+'</div>';}).join('')+'</div>';
+  var d=currentData,cols='1fr 90px 80px 100px 80px 80px 80px';
+  var html='<div class="col-heads" style="grid-template-columns:'+cols+';gap:6px">'+['Anlaşma','Sorumlu','Kanal','Tutar (USD)','Aşama','Şehir','Tarih'].map(function(h){return'<div class="col-head">'+h+'</div>';}).join('')+'</div>';
   if(!lostDeals.length){html+='<div class="empty-row">Bu dönem için kayıp anlaşma yok 🎉</div>';}
   else{lostDeals.slice().sort(function(a,b){return parseFloat(b.OPPORTUNITY||0)-parseFloat(a.OPPORTUNITY||0);}).forEach(function(deal){
     var user=null;d.users.forEach(function(u){if(u.ID===deal.ASSIGNED_BY_ID)user=u;});
@@ -939,9 +961,9 @@ function renderSource() {
   document.getElementById('source-count').textContent = deals.length + ' anlaşma · ' + groupArr.length + ' kaynak';
 
   // Anlaşma tablosu
-  var cols = '1fr 100px 100px 100px 90px 90px';
+  var cols = '1fr 90px 90px 100px 80px 80px 80px';
   var html = '<div class="col-heads" style="grid-template-columns:'+cols+';gap:6px">'+
-    ['Anlaşma','Sorumlu','Kaynak','Tutar (USD)','Durum','Tarih'].map(function(h){return'<div class="col-head">'+h+'</div>';}).join('')+'</div>';
+    ['Anlaşma','Sorumlu','Kaynak','Tutar (USD)','Durum','Şehir','Tarih'].map(function(h){return'<div class="col-head">'+h+'</div>';}).join('')+'</div>';
 
   if(!deals.length){html+='<div class="empty-row">Bu dönem için anlaşma yok.</div>';}
   else{
@@ -958,6 +980,7 @@ function renderSource() {
         '<span class="ch-tag" style="background:#0f172a;color:'+src.color+';border:1px solid #1e293b">'+src.icon+' '+src.label+'</span>'+
         '<span style="color:#22c55e;font-weight:700;font-size:12px;font-family:monospace">'+fmtUSD(deal.OPPORTUNITY)+'</span>'+
         '<span class="badge" style="background:'+bg+';color:'+fc+'">'+(isWon?'Kazanıldı':isLost?'Kaybedildi':'Devam')+'</span>'+
+        '<span style="color:#94a3b8;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(deal.COMPANY_ID&&currentData['_city_'+deal.COMPANY_ID]?currentData['_city_'+deal.COMPANY_ID]:'—')+'</span>'+
         '<div style="color:#94a3b8;font-size:11px"><div>'+fmtDate(deal.DATE_CREATE)+'</div><div style="color:#334155;margin-top:1px">'+fmtTime(deal.DATE_CREATE)+'</div></div>'+
       '</div>';
     });
@@ -965,7 +988,13 @@ function renderSource() {
   document.getElementById('source-body').innerHTML = html;
 }
 
-function setMainTab(t){currentMainTab=t;['overview','sales','tech','activities','deals','lost','trend','target','source','calendar'].forEach(function(k){document.getElementById('mt-'+k).classList.toggle('active',k===t);document.getElementById('view-'+k).style.display=k===t?'block':'none';});if(t==='trend'&&currentData)setTimeout(function(){renderTrend();},50);if(t==='source'&&currentData)renderSource();if(t==='calendar')setTimeout(function(){renderCalendar();},50);}
+var verifyRange = 7;
+function setVerifyRange(days) {
+  verifyRange = days;
+  [7,14,30].forEach(function(d){ var el=document.getElementById('verify-'+d); if(el) el.classList.toggle('active',d===days); });
+  renderCalVerify();
+}
+function setMainTab(t){currentMainTab=t;['overview','sales','tech','activities','deals','lost','trend','target','source','calendar','verify'].forEach(function(k){document.getElementById('mt-'+k).classList.toggle('active',k===t);document.getElementById('view-'+k).style.display=k===t?'block':'none';});if(t==='trend'&&currentData)setTimeout(function(){renderTrend();},50);if(t==='source'&&currentData)renderSource();if(t==='calendar')setTimeout(function(){renderCalendar();},50);if(t==='verify')renderCalVerify();}
 
 function showSpinner(){document.getElementById('spinner').style.display='flex';document.getElementById('dashboard').style.display='none';document.getElementById('empty').style.display='none';document.getElementById('error-box').style.display='none';}
 function hideSpinner(){document.getElementById('spinner').style.display='none';}
