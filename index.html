@@ -167,21 +167,18 @@ input{font-family:'DM Sans',sans-serif}
 @media(prefers-color-scheme:light){.sheet-btn{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}}
 
 /* ── MORE SHEET ──────────────────────────────────── */
-#more-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.6);
-  z-index:400;-webkit-tap-highlight-color:transparent;
-  opacity:0;pointer-events:none;transition:opacity .3s;
-}
-#more-overlay.open{opacity:1;pointer-events:auto}
-#more-sheet{
-  position:fixed;bottom:0;left:0;right:0;z-index:401;
-  background:#0d1b2e;border-top:1px solid #1e293b;
-  border-radius:24px 24px 0 0;
-  padding:12px 20px calc(env(safe-area-inset-bottom,0px) + 80px);
-  transition:transform .3s cubic-bezier(.32,0,.67,0);
-  transform:translateY(110%);
-}
-#more-sheet.open{transform:translateY(0)}
+
+
+
+
+/* MORE SHEET - simple approach */
+#more-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400}
+#more-sheet{display:none;position:fixed;bottom:0;left:0;right:0;z-index:401;
+  background:#0d1b2e;border-top:1px solid #1e293b;border-radius:24px 24px 0 0;
+  padding:12px 20px 20px}
+@media(min-width:901px){#more-overlay,#more-sheet{display:none!important}}
+@media(prefers-color-scheme:light){#more-sheet{background:#fff;border-top-color:#e2e8f0}}
+
 .sheet-handle{width:40px;height:5px;border-radius:3px;background:#334155;margin:0 auto 16px}
 .sheet-title{font-size:11px;color:#475569;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
 .sheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -196,14 +193,14 @@ input{font-family:'DM Sans',sans-serif}
 .sheet-btn:active{background:#1e293b;transform:scale(.95)}
 .sheet-btn .sb-icon{font-size:26px;line-height:1}
 @media(prefers-color-scheme:light){
-  #more-sheet{background:#fff;border-top-color:#e2e8f0}
+  
   .sheet-btn{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}
   .sheet-btn:active{background:#e2e8f0}
 }
 /* Hide on desktop - FORCE */
 @media(min-width:901px){
-  #more-sheet{display:none!important;transform:none!important}
-  #more-overlay{display:none!important}
+  
+  
 }
 
 /* ── BOTTOM NAV ───────────────────────────────────── */
@@ -1222,26 +1219,14 @@ function setMainTabMobile(t) {
 
 // ── MORE SHEET ──────────────────────────────────────
 function openMoreSheet() {
-  var sheet = document.getElementById('more-sheet');
-  var overlay = document.getElementById('more-overlay');
-  sheet.style.display = 'block';
-  overlay.style.display = 'block';
-  setTimeout(function(){
-    sheet.classList.add('open');
-    overlay.classList.add('open');
-  }, 10);
+  document.getElementById('more-sheet').style.display = 'block';
+  document.getElementById('more-overlay').style.display = 'block';
   document.body.style.overflow = 'hidden';
 }
 function closeMoreSheet() {
-  var sheet = document.getElementById('more-sheet');
-  var overlay = document.getElementById('more-overlay');
-  sheet.classList.remove('open');
-  overlay.classList.remove('open');
+  document.getElementById('more-sheet').style.display = 'none';
+  document.getElementById('more-overlay').style.display = 'none';
   document.body.style.overflow = '';
-  setTimeout(function(){
-    sheet.style.display = 'none';
-    overlay.style.display = 'none';
-  }, 300);
 }
 
 // PWA Service Worker
