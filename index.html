@@ -623,20 +623,43 @@ async function loadCalendarEvents() {
   var users = (currentData && currentData.users) ? currentData.users : [];
   
   try {
-    // Önce şirket takvimi
-    var res = await b24('calendar.event.get', {type:'company', ownerId:0, dateFrom:startStr, dateTo:endStr});
-    if(res && Array.isArray(res)) allEvents = allEvents.concat(res.map(function(e){e._calType='company';return e;}));
-    
-    // Her kullanıcının takvimi
-    for(var i=0; i<Math.min(users.length,20); i++) {
+    // Tüm kullanıcıların takvimlerini çek, özel etkinlikleri filtrele
+    for(var i=0; i<Math.min(users.length,25); i++) {
       try {
-        var ures = await b24('calendar.event.get', {type:'user', ownerId:users[i].ID, dateFrom:startStr, dateTo:endStr});
+        var ures = await b24('calendar.event.get', {
+          type:'user',
+          ownerId: users[i].ID,
+          dateFrom: startStr,
+          dateTo: endStr
+        });
         if(ures && Array.isArray(ures)) {
-          ures.forEach(function(e){ e._userId=users[i].ID; e._userName=((users[i].NAME||'')+' '+(users[i].LAST_NAME||'')).trim(); e._calType='user'; });
-          allEvents = allEvents.concat(ures);
+          var userName = ((users[i].NAME||'')+' '+(users[i].LAST_NAME||'')).trim();
+          ures.forEach(function(e){
+            e._userId = users[i].ID;
+            e._userName = userName;
+            e._calType = 'user';
+          });
+          // Sadece iş etkinlikleri — özel/kişisel olanları atla
+          var filtered = ures.filter(function(e){
+            if(e.PRIVATE_EVENT === 'Y') return false;
+            // Kişisel görünen etkinlikleri atla (IS_MEETING değil ve sadece sahibi var)
+            if(!e.IS_MEETING && e.ATTENDEES_CODES && e.ATTENDEES_CODES.length <= 1) {
+              // Başlıkta iş kelimesi geçmiyorsa atla — çok agresif olabilir, şimdilik hepsini al
+            }
+            return true;
+          });
+          allEvents = allEvents.concat(filtered);
         }
-      } catch(e){}
+      } catch(err){}
     }
+    // Şirket takvimini de dene
+    try {
+      var cres = await b24('calendar.event.get', {type:'company', ownerId:0, dateFrom:startStr, dateTo:endStr});
+      if(cres && Array.isArray(cres) && cres.length > 0) {
+        cres.forEach(function(e){ e._calType='company'; e._userName='Şirket'; });
+        allEvents = allEvents.concat(cres);
+      }
+    } catch(err){}
   } catch(e) { console.error('Calendar error:', e); }
 
   // Tekrarları kaldır (aynı ID)
