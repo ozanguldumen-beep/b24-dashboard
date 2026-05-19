@@ -168,18 +168,20 @@ input{font-family:'DM Sans',sans-serif}
 
 /* ── MORE SHEET ──────────────────────────────────── */
 #more-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
   z-index:400;-webkit-tap-highlight-color:transparent;
+  opacity:0;pointer-events:none;transition:opacity .3s;
 }
-#more-overlay.open{display:block}
+#more-overlay.open{opacity:1;pointer-events:auto}
 #more-sheet{
-  display:none;position:fixed;bottom:0;left:0;right:0;z-index:401;
+  position:fixed;bottom:0;left:0;right:0;z-index:401;
   background:#0d1b2e;border-top:1px solid #1e293b;
   border-radius:24px 24px 0 0;
   padding:12px 20px calc(env(safe-area-inset-bottom,0px) + 80px);
-  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);
+  transition:transform .3s cubic-bezier(.32,0,.67,0);
+  transform:translateY(110%);
 }
-#more-sheet.open{display:block;transform:translateY(0)}
+#more-sheet.open{transform:translateY(0)}
 .sheet-handle{width:40px;height:5px;border-radius:3px;background:#334155;margin:0 auto 16px}
 .sheet-title{font-size:11px;color:#475569;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
 .sheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -198,8 +200,11 @@ input{font-family:'DM Sans',sans-serif}
   .sheet-btn{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}
   .sheet-btn:active{background:#e2e8f0}
 }
-/* Hide on desktop */
-@media(min-width:901px){#more-sheet,#more-overlay{display:none!important}}
+/* Hide on desktop - FORCE */
+@media(min-width:901px){
+  #more-sheet{display:none!important;transform:none!important}
+  #more-overlay{display:none!important}
+}
 
 /* ── BOTTOM NAV ───────────────────────────────────── */
 #bottom-nav{
@@ -1217,14 +1222,26 @@ function setMainTabMobile(t) {
 
 // ── MORE SHEET ──────────────────────────────────────
 function openMoreSheet() {
-  document.getElementById('more-sheet').classList.add('open');
-  document.getElementById('more-overlay').classList.add('open');
+  var sheet = document.getElementById('more-sheet');
+  var overlay = document.getElementById('more-overlay');
+  sheet.style.display = 'block';
+  overlay.style.display = 'block';
+  setTimeout(function(){
+    sheet.classList.add('open');
+    overlay.classList.add('open');
+  }, 10);
   document.body.style.overflow = 'hidden';
 }
 function closeMoreSheet() {
-  document.getElementById('more-sheet').classList.remove('open');
-  document.getElementById('more-overlay').classList.remove('open');
+  var sheet = document.getElementById('more-sheet');
+  var overlay = document.getElementById('more-overlay');
+  sheet.classList.remove('open');
+  overlay.classList.remove('open');
   document.body.style.overflow = '';
+  setTimeout(function(){
+    sheet.style.display = 'none';
+    overlay.style.display = 'none';
+  }, 300);
 }
 
 // PWA Service Worker
@@ -1259,9 +1276,9 @@ document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY
 </div>
 
 <!-- PWA SW -->
-<!-- MORE SHEET -->
-<div id="more-overlay" onclick="closeMoreSheet()"></div>
-<div id="more-sheet">
+<!-- MORE SHEET (mobile only) -->
+<div id="more-overlay" onclick="closeMoreSheet()" style="display:none"></div>
+<div id="more-sheet" style="display:none">
   <div class="sheet-handle"></div>
   <div class="sheet-title">Diğer Sayfalar</div>
   <div class="sheet-grid">
