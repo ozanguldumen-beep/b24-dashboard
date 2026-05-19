@@ -127,6 +127,26 @@ http.createServer(async (req, res) => {
     res.end(); return;
   }
 
+  // Static files
+  if(url === '/manifest.json') {
+    fs.readFile(path.join(__dirname, 'manifest.json'), (err, data) => {
+      if(err){res.writeHead(404);res.end();return;}
+      res.writeHead(200,{'Content-Type':'application/manifest+json'});res.end(data);
+    });return;
+  }
+  if(url === '/sw.js') {
+    fs.readFile(path.join(__dirname, 'sw.js'), (err, data) => {
+      if(err){res.writeHead(404);res.end();return;}
+      res.writeHead(200,{'Content-Type':'application/javascript','Service-Worker-Allowed':'/'});res.end(data);
+    });return;
+  }
+  if(url === '/icon-192.png' || url === '/icon-512.png') {
+    fs.readFile(path.join(__dirname, url.slice(1)), (err, data) => {
+      if(err){res.writeHead(404);res.end();return;}
+      res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'public,max-age=86400'});res.end(data);
+    });return;
+  }
+
   // Ana dashboard
   fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
     if (err) { res.writeHead(500); res.end('Hata'); return; }

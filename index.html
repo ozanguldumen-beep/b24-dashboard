@@ -2,12 +2,30 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Bitrix24 Rapor v3</title>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="B24 Rapor"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="apple-touch-icon" href="/icon-192.png"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="B24 Rapor"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#1d4ed8" media="(prefers-color-scheme: dark)"/>
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"/>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="apple-touch-icon" href="/icon-192.png"/>
+<title>B24 Rapor</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#060d1a;color:#f1f5f9;font-family:'DM Sans',sans-serif;min-height:100vh}
+/* Theme variables */
+:root{--bg:#060d1a;--bg2:#0d1b2e;--bg3:#0f172a;--border:#1e293b;--text:#f1f5f9;--text2:#94a3b8;--text3:#475569;--text4:#334155;--accent:#1d4ed8;--safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px)}
+[data-theme="light"]{--bg:#f1f5f9;--bg2:#ffffff;--bg3:#f8fafc;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--text4:#cbd5e1}
+html{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;transition:background .3s,color .3s}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:#060d1a}
 ::-webkit-scrollbar-thumb{background:#1e293b;border-radius:3px}
@@ -102,36 +120,137 @@ input{font-family:'DM Sans',sans-serif}
 .lost-card-label{font-size:9px;color:#64748b;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
 .lost-card-value{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#f87171}
 .lost-card-sub{font-size:10px;color:#7f1d1d;margin-top:4px;font-weight:600}
-@media(max-width:900px){.team-compare{grid-template-columns:1fr}}
-@media(max-width:768px){
-  .cards-grid{grid-template-columns:repeat(2,1fr)}
-  .target-cards{grid-template-columns:1fr}
-  #day-picker-wrap{display:none}
-  #content{padding:10px 12px}
-  #header{padding:8px 12px}
-  #main-tabs{gap:0}
-  .main-tab{padding:8px 10px;font-size:11px}
-  .team-compare{grid-template-columns:1fr}
-  .col-heads,.tbl-row{overflow-x:auto}
-  #pipeline-bar{padding:6px 12px}
-  .filter-bar{padding:6px 12px}
-  .tbl-head{padding:10px 12px}
-  .chart-wrap{padding:12px}
-  canvas{max-height:160px!important}
+
+/* ── LIGHT MODE ──────────────────────────────────── */
+@media(prefers-color-scheme:light){
+  :root{--bg:#f1f5f9;--bg2:#fff;--bg3:#f8fafc;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8}
+  body{background:#f1f5f9;color:#0f172a}
+  #header{background:rgba(255,255,255,.97);border-bottom-color:#e2e8f0}
+  .filter-bar{background:rgba(255,255,255,.97);border-bottom-color:#e2e8f0}
+  .pill{border-color:#e2e8f0;color:#64748b;background:#fff}
+  .pill.active{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+  .card{background:#fff;border-color:#e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .card-label{color:#94a3b8}.card-value{color:#0f172a}.card-sub{opacity:.8}
+  .table-wrap,.team-box,.chart-wrap,.target-wrap{background:#fff;border-color:#e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .tbl-head,.team-box-header{border-bottom-color:#e2e8f0}
+  .tbl-head-title,.chart-title,.target-title{color:#0f172a}
+  .col-head{color:#94a3b8}
+  .tbl-row{border-bottom-color:#f1f5f9}
+  .tbl-row:hover{background:#f8fafc}
+  .uname{color:#0f172a}
+  .empty-row{color:#cbd5e1}
+  .dept-tag{background:#f1f5f9;color:#64748b}
+  #modal-box{background:#fff;border-color:#e2e8f0;box-shadow:0 25px 60px rgba(0,0,0,.2)}
+  #modal h2{color:#0f172a}
+  #modal input{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}
+  #main-tabs{border-bottom-color:#e2e8f0}
+  .main-tab{color:#94a3b8}.main-tab.active{color:#1d4ed8;border-bottom-color:#1d4ed8}
+  .sub-tabs{background:#f1f5f9}
+  .sub-tab{color:#94a3b8}.sub-tab.active{background:#1d4ed8;color:#fff}
+  #tab-bar{background:#f1f5f9}
+  #dash-h1{color:#0f172a}
+  .lost-card{background:#fff;border-color:#fecaca}
+  .target-input{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}
+  .target-card{background:#f8fafc}
+  .target-card-label{color:#94a3b8}
+  #error-box{background:#fef2f2;border-color:#fecaca;color:#dc2626}
+  #warn-box{background:#fffbeb;border-color:#fde68a;color:#d97706}
+  #bottom-nav{background:rgba(255,255,255,.97);border-top-color:#e2e8f0}
+  .bnav-item{color:#94a3b8}.bnav-item.active{color:#1d4ed8}
+  #day-picker-wrap{background:#fff;border-color:#e2e8f0}
+  #login-page{background:linear-gradient(135deg,#eff6ff,#f0f9ff)}
 }
-@media(max-width:480px){
-  .cards-grid{grid-template-columns:repeat(2,1fr)}
-  #dash-h1{font-size:15px}
-  .main-tab{padding:7px 8px;font-size:10px}
-  #header-right{gap:3px}
-  .pill{padding:4px 8px;font-size:10px}
-  #app-title{font-size:13px}
-  .card-value{font-size:20px}
-  .tbl-row{font-size:11px}
+
+/* ── BOTTOM NAV ───────────────────────────────────── */
+#bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:rgba(6,13,26,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid #1e293b;
+  padding:6px 0 calc(env(safe-area-inset-bottom, 0px) + 4px);
+  z-index:200;justify-content:space-around;align-items:flex-start;
+}
+.bnav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:4px 6px;border:none;background:transparent;
+  color:#475569;font-family:'DM Sans',sans-serif;cursor:pointer;
+  transition:color .15s;min-width:44px;min-height:44px;justify-content:center;
+}
+.bnav-item.active{color:#3b82f6}
+.bnav-icon{font-size:22px;line-height:1}
+.bnav-label{font-size:9px;font-weight:600;letter-spacing:.3px}
+.bnav-dot{width:5px;height:5px;border-radius:50%;background:#3b82f6;margin-top:1px}
+
+/* ── TABLET (768-900) ─────────────────────────────── */
+@media(max-width:900px){
+  #bottom-nav{display:flex}
+  #main-tabs{display:none}
+  #content{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 72px)!important}
+}
+
+/* ── MOBILE (≤430 — iPhone 17 Pro) ──────────────────── */
+@media(max-width:430px){
+  /* iOS safe area */
+  :root{--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+  #header{
+    padding:calc(var(--safe-top) + 8px) 14px 8px;
+    position:fixed;width:100%;top:0;z-index:100;
+  }
+  #pipeline-bar,.filter-bar{
+    position:sticky;
+    top:calc(var(--safe-top) + 52px);
+    z-index:99;
+    padding:6px 12px;
+  }
+  #content{
+    padding-top:calc(var(--safe-top) + 62px);
+    padding-left:12px;padding-right:12px;
+    padding-bottom:calc(var(--safe-bottom) + 72px);
+  }
+  /* Modal bottom sheet */
+  #modal{padding:0;align-items:flex-end}
+  #modal-box{
+    border-radius:20px 20px 0 0;
+    padding:20px 20px calc(var(--safe-bottom) + 20px);
+    max-width:100%;width:100%;
+  }
+  /* Cards 2 col */
+  .cards-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .card{padding:12px 13px}
+  .card-value{font-size:19px}
+  .card-label{font-size:8px;letter-spacing:.8px}
+  .card-sub{font-size:9px}
+  /* Teams single col */
+  .team-compare{grid-template-columns:1fr}
+  /* Table smaller */
+  .tbl-head{padding:10px 12px}
+  .col-heads{padding:7px 10px}
+  .tbl-row{padding:8px 10px}
   .col-head{font-size:8px}
-  .tcell{font-size:11px}
   .uname{font-size:11px}
+  .tcell{font-size:11px}
   .badge{font-size:9px;padding:2px 5px}
+  /* Header */
+  #app-title{font-size:13px}
+  #logo{width:28px;height:28px;font-size:13px}
+  #last-refresh{font-size:8px}
+  #header-right{gap:4px}
+  .pill{padding:4px 9px;font-size:10px}
+  #btn-refresh,#btn-settings{display:none}
+  /* Dash title */
+  #dash-h1{font-size:16px}
+  #dash-sub{font-size:10px}
+  /* Target */
+  .target-cards{grid-template-columns:repeat(3,1fr)}
+  .target-card-value{font-size:15px}
+  /* Day picker hidden */
+  #day-picker-wrap{display:none}
+  /* Calendar grid */
+  #cal-layout{grid-template-columns:1fr!important}
+  /* Chart */
+  canvas{max-height:140px!important}
+  /* Bottom nav larger touch targets */
+  .bnav-item{min-width:48px}
+  .bnav-icon{font-size:24px}
 }
 </style>
 </head>
@@ -1038,6 +1157,221 @@ function showSpinner(){document.getElementById('spinner').style.display='flex';d
 function hideSpinner(){document.getElementById('spinner').style.display='none';}
 function showError(msg){var el=document.getElementById('error-box');el.textContent='⚠ '+msg;el.style.display='block';document.getElementById('empty').style.display='block';}
 function showWarnings(){var k=Object.keys(methodWarnings);var el=document.getElementById('warn-box');if(!k.length){el.style.display='none';return;}el.innerHTML='ℹ Bazı veriler atlandı: <span style="font-family:monospace;color:#f59e0b">'+k.join(' · ')+'</span>';el.style.display='block';}
+
+// ── MOBILE NAV ──────────────────────────────────────
+var BNAV_TABS = {'overview':'bnav-overview','sales':'bnav-sales','deals':'bnav-deals','activities':'bnav-activities'};
+
+function setMainTabMobile(t) {
+  setMainTab(t);
+  // Update bottom nav active state
+  Object.keys(BNAV_TABS).forEach(function(k){
+    var el = document.getElementById(BNAV_TABS[k]);
+    if(el) el.classList.toggle('active', k===t);
+  });
+  var moreBtn = document.getElementById('bnav-more');
+  if(moreBtn) moreBtn.classList.toggle('active', !BNAV_TABS[t]);
+}
+
+function toggleMoreSheet() {
+  var sheet = document.getElementById('more-sheet');
+  var overlay = document.getElementById('more-overlay');
+  if(!sheet) return;
+  var isOpen = sheet.style.display !== 'none';
+  sheet.style.display = isOpen ? 'none' : 'block';
+  overlay.style.display = isOpen ? 'none' : 'block';
+  // Apply light/dark theme to sheet
+  var isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  sheet.style.background = isDark ? '#0d1b2e' : '#ffffff';
+  sheet.style.borderTop = isDark ? '1px solid #1e293b' : '1px solid #e2e8f0';
+  // Update button styles for light mode
+  if(!isDark) {
+    sheet.querySelectorAll('button').forEach(function(b){
+      b.style.background = '#f8fafc';
+      b.style.borderColor = '#e2e8f0';
+      b.style.color = '#0f172a';
+    });
+  }
+}
+
+// PWA Service Worker
+if('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+      console.log('SW registered');
+    }).catch(function(e) {
+      console.log('SW failed:', e);
+    });
+  });
+}
+
+// iOS PWA: prevent bounce scroll
+document.addEventListener('touchmove', function(e) {
+  if(e.target.closest('#cal-detail-body,#cal-verify-body,.tbl-row,.table-wrap,#content')) return;
+}, {passive:true});
+
+// Pull to refresh hint
+var startY = 0;
+document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY; }, {passive:true});
+
 </script>
+
+<!-- BOTTOM NAV (Mobile) -->
+<div id="bottom-nav">
+  <div class="nav-item active" data-page="overview" onclick="goPage('overview')"><div class="nav-icon">📊</div><div class="nav-label">Genel</div></div>
+  <div class="nav-item" data-page="sales" onclick="goPage('sales')"><div class="nav-icon">💼</div><div class="nav-label">Satış</div></div>
+  <div class="nav-item" data-page="deals" onclick="goPage('deals')"><div class="nav-icon">🤝</div><div class="nav-label">Anlaşma</div></div>
+  <div class="nav-item" data-page="calendar" onclick="goPage('calendar')"><div class="nav-icon">📅</div><div class="nav-label">Takvim</div></div>
+  <div class="nav-item" id="nav-more" onclick="toggleMoreSheet()"><div class="nav-icon">⋯</div><div class="nav-label">Daha</div></div>
+</div>
+<!-- MORE SHEET -->
+<div class="more-overlay" id="more-overlay" onclick="closeMoreSheet()"></div>
+<div class="more-sheet" id="more-sheet">
+  <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px"></div>
+  <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px">Diğer Sayfalar</div>
+  <div class="more-grid" id="more-grid"></div>
+</div>
+<!-- PWA SW -->
+<!-- BOTTOM NAV (mobile only) -->
+<div id="bottom-nav">
+  <button class="bnav-item active" id="bnav-overview" onclick="setMainTabMobile('overview')">
+    <span class="bnav-icon">📊</span>
+    <span class="bnav-label">Genel</span>
+  </button>
+  <button class="bnav-item" id="bnav-sales" onclick="setMainTabMobile('sales')">
+    <span class="bnav-icon">💼</span>
+    <span class="bnav-label">Satış</span>
+  </button>
+  <button class="bnav-item" id="bnav-deals" onclick="setMainTabMobile('deals')">
+    <span class="bnav-icon">🤝</span>
+    <span class="bnav-label">Anlaşma</span>
+  </button>
+  <button class="bnav-item" id="bnav-activities" onclick="setMainTabMobile('activities')">
+    <span class="bnav-icon">📋</span>
+    <span class="bnav-label">Aktivite</span>
+  </button>
+  <button class="bnav-item" id="bnav-more" onclick="toggleMoreSheet()">
+    <span class="bnav-icon">⋯</span>
+    <span class="bnav-label">Daha Fazla</span>
+  </button>
+</div>
+
+<!-- MORE SHEET (mobile) -->
+<div id="more-overlay" onclick="toggleMoreSheet()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300"></div>
+<div id="more-sheet" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:301;border-radius:20px 20px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 16px)">
+  <div style="width:36px;height:4px;border-radius:2px;background:#334155;margin:0 auto 16px"></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+    <button onclick="setMainTabMobile('tech');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
+      <span style="font-size:22px">🔧</span>Teknik
+    </button>
+    <button onclick="setMainTabMobile('lost');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
+      <span style="font-size:22px">❌</span>Kayıplar
+    </button>
+    <button onclick="setMainTabMobile('trend');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
+      <span style="font-size:22px">📈</span>Trend
+    </button>
+    <button onclick="setMainTabMobile('target');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
+      <span style="font-size:22px">🎯</span>Hedef
+    </button>
+    <button onclick="setMainTabMobile('source');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
+      <span style="font-size:22px">📡</span>Kaynak
+    </button>
+    <button onclick="setMainTabMobile('calendar');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
+      <span style="font-size:22px">📅</span>Takvim
+    </button>
+    <button onclick="setMainTabMobile('verify');toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
+      <span style="font-size:22px">🔍</span>Yaptı mı?
+    </button>
+    <button onclick="document.getElementById('wh-input').value=webhookUrl;document.getElementById('modal').style.display='flex';toggleMoreSheet()" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid #1e293b;background:#0d1b2e;color:#e2e8f0;font-size:11px;font-weight:600;cursor:pointer">
+      <span style="font-size:22px">⚙️</span>Ayarlar
+    </button>
+  </div>
+</div>
+
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
+
+// Theme system
+var _theme = localStorage.getItem('b24_theme') || (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+document.documentElement.setAttribute('data-theme', _theme);
+
+function toggleTheme(){
+  _theme = _theme==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',_theme);
+  localStorage.setItem('b24_theme',_theme);
+  var btn=document.getElementById('theme-toggle');
+  if(btn)btn.textContent=_theme==='dark'?'☀️':'🌙';
+}
+
+// Bottom nav
+var MORE_PAGES=[
+  {id:'tech',icon:'🔧',label:'Teknik'},
+  {id:'activities',icon:'📋',label:'Aktivite'},
+  {id:'lost',icon:'❌',label:'Kayıplar'},
+  {id:'trend',icon:'📈',label:'Trend'},
+  {id:'target',icon:'🎯',label:'Hedef'},
+  {id:'source',icon:'📡',label:'Kaynak'},
+  {id:'verify',icon:'🔍',label:'Yaptı mı?'},
+];
+
+window.addEventListener('load', function(){
+  // Build more grid
+  var grid = document.getElementById('more-grid');
+  if(grid){
+    MORE_PAGES.forEach(function(p){
+      var el=document.createElement('div');
+      el.className='more-item'; el.id='more-item-'+p.id;
+      el.innerHTML='<div class="more-item-icon">'+p.icon+'</div><div>'+p.label+'</div>';
+      el.onclick=function(){closeMoreSheet();goPage(p.id);};
+      grid.appendChild(el);
+    });
+  }
+  // Add theme toggle to header
+  var hdrRight=document.getElementById('header-right');
+  if(hdrRight){
+    var tb=document.createElement('button');
+    tb.id='theme-toggle';tb.textContent=_theme==='dark'?'☀️':'🌙';
+    tb.onclick=toggleTheme;
+    hdrRight.insertBefore(tb,hdrRight.firstChild);
+  }
+});
+
+function goPage(id){
+  currentMainTab = id; // keep existing var
+  // Hide all views
+  ['overview','sales','tech','activities','deals','lost','trend','target','source','calendar','verify'].forEach(function(k){
+    var el=document.getElementById('view-'+k);if(el)el.style.display='none';
+    var mt=document.getElementById('mt-'+k);if(mt)mt.classList.remove('active');
+  });
+  // Show selected
+  var view=document.getElementById('view-'+id);if(view)view.style.display='block';
+  var mt2=document.getElementById('mt-'+id);if(mt2)mt2.classList.add('active');
+  // Update bottom nav
+  document.querySelectorAll('#bottom-nav .nav-item[data-page]').forEach(function(el){
+    el.classList.toggle('active',el.dataset.page===id);
+  });
+  // Update more grid
+  MORE_PAGES.forEach(function(p){
+    var el=document.getElementById('more-item-'+p.id);
+    if(el)el.classList.toggle('active',p.id===id);
+  });
+  // Scroll to top
+  var content=document.getElementById('content');if(content)content.scrollTop=0;
+  // Lazy renders
+  if(id==='trend'&&currentData)setTimeout(function(){renderTrend();},50);
+  if(id==='calendar')setTimeout(function(){renderCalendar();},50);
+  if(id==='verify')renderCalVerify();
+  if(id==='source'&&currentData)renderSource();
+}
+
+function toggleMoreSheet(){
+  document.getElementById('more-sheet').classList.toggle('open');
+  document.getElementById('more-overlay').classList.toggle('open');
+}
+function closeMoreSheet(){
+  document.getElementById('more-sheet').classList.remove('open');
+  document.getElementById('more-overlay').classList.remove('open');
+}
+</script>
+
 </body>
 </html>
