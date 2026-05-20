@@ -1263,6 +1263,13 @@ window.addEventListener('load', function(){
 
 
 
+// Show bottom nav on mobile
+(function(){
+  if(window.innerWidth <= 900) {
+    var bn = document.getElementById('bottom-nav');
+    if(bn) bn.style.display = 'flex';
+  }
+})();
 var _BT=['overview','sales','deals','activities'];
 function mbt(t){
   setMainTab(t);
@@ -1275,15 +1282,15 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch
 </script>
 
 
-<div id="bottom-nav">
+<div id="bottom-nav" style="display:none">
   <button class="bn on" id="bn0" onclick="mbt('overview')"><em class="bi">📊</em><span class="bl">Genel</span></button>
   <button class="bn" id="bn1" onclick="mbt('sales')"><em class="bi">💼</em><span class="bl">Satış</span></button>
   <button class="bn" id="bn2" onclick="mbt('deals')"><em class="bi">🤝</em><span class="bl">Anlaşma</span></button>
   <button class="bn" id="bn3" onclick="mbt('activities')"><em class="bi">📋</em><span class="bl">Aktivite</span></button>
   <button class="bn" id="bn4" onclick="mos()"><em class="bi">⋯</em><span class="bl">Daha Fazla</span></button>
 </div>
-<div id="mso" onclick="mcs()"></div>
-<div id="mss">
+<div id="mso" onclick="mcs()" style="display:none"></div>
+<div id="mss" style="display:none">
   <div class="msh"></div>
   <div class="mst">Diğer Sayfalar</div>
   <div class="msg">
