@@ -225,76 +225,44 @@ input{font-family:'DM Sans',sans-serif}
 .bnav-dot{width:5px;height:5px;border-radius:50%;background:#3b82f6;margin-top:1px}
 
 /* ── TABLET (768-900) ─────────────────────────────── */
+
+/* ═══════ MOBILE NAV ═══════════════════════════════════ */
+#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;
+  height:56px;background:#060d1a;border-top:1px solid #1e293b;z-index:200;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  justify-content:space-around;align-items:center}
+.bn{display:flex;flex-direction:column;align-items:center;gap:2px;
+  min-width:52px;min-height:48px;padding:4px;border:none;background:none;
+  color:#475569;cursor:pointer;justify-content:center;
+  -webkit-tap-highlight-color:transparent;font-family:'DM Sans',sans-serif}
+.bn.on{color:#3b82f6}
+.bn:active{opacity:.6}
+.bi{font-size:26px;line-height:1.1}
+.bl{font-size:10px;font-weight:600}
+#mso{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300}
+#mss{display:none;position:fixed;bottom:0;left:0;right:0;z-index:301;
+  background:#0d1b2e;border-radius:20px 20px 0 0;border-top:1px solid #1e293b;
+  padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 76px)}
+.msh{width:36px;height:4px;background:#334155;border-radius:2px;margin:0 auto 14px}
+.mst{font-size:11px;color:#475569;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.msg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.msb{display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:12px 6px;border-radius:12px;border:1px solid #1e293b;
+  background:#0a1628;color:#e2e8f0;font-size:10px;font-weight:600;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  -webkit-tap-highlight-color:transparent}
+.msb:active{background:#1e293b}
+.msb em{font-size:24px;font-style:normal;line-height:1;display:block}
 @media(max-width:900px){
   #bottom-nav{display:flex}
-  #main-tabs{display:none}
-  #content{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 72px)!important}
+  #main-tabs{display:none!important}
+  #content{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 64px)!important}
 }
-
-/* ── MOBILE (≤430 — iPhone 17 Pro) ──────────────────── */
-@media(max-width:430px){
-  /* iOS safe area */
-  :root{--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
-  #header{
-    padding:calc(var(--safe-top) + 8px) 14px 8px;
-    position:fixed;width:100%;top:0;z-index:100;
-  }
-  #pipeline-bar,.filter-bar{
-    position:sticky;
-    top:calc(var(--safe-top) + 52px);
-    z-index:99;
-    padding:6px 12px;
-  }
-  #content{
-    padding-top:calc(var(--safe-top) + 62px);
-    padding-left:12px;padding-right:12px;
-    padding-bottom:calc(var(--safe-bottom) + 72px);
-  }
-  /* Modal bottom sheet */
-  #modal{padding:0;align-items:flex-end}
-  #modal-box{
-    border-radius:20px 20px 0 0;
-    padding:20px 20px calc(var(--safe-bottom) + 20px);
-    max-width:100%;width:100%;
-  }
-  /* Cards 2 col */
-  .cards-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .card{padding:12px 13px}
-  .card-value{font-size:19px}
-  .card-label{font-size:8px;letter-spacing:.8px}
-  .card-sub{font-size:9px}
-  /* Teams single col */
-  .team-compare{grid-template-columns:1fr}
-  /* Table smaller */
-  .tbl-head{padding:10px 12px}
-  .col-heads{padding:7px 10px}
-  .tbl-row{padding:8px 10px}
-  .col-head{font-size:8px}
-  .uname{font-size:11px}
-  .tcell{font-size:11px}
-  .badge{font-size:9px;padding:2px 5px}
-  /* Header */
-  #app-title{font-size:13px}
-  #logo{width:28px;height:28px;font-size:13px}
-  #last-refresh{font-size:8px}
-  #header-right{gap:4px}
-  .pill{padding:4px 9px;font-size:10px}
-  #btn-refresh,#btn-settings{display:none}
-  /* Dash title */
-  #dash-h1{font-size:16px}
-  #dash-sub{font-size:10px}
-  /* Target */
-  .target-cards{grid-template-columns:repeat(3,1fr)}
-  .target-card-value{font-size:15px}
-  /* Day picker hidden */
-  #day-picker-wrap{display:none}
-  /* Calendar grid */
-  #cal-layout{grid-template-columns:1fr!important}
-  /* Chart */
-  canvas{max-height:140px!important}
-  /* Bottom nav larger touch targets */
-  .bnav-item{min-width:48px}
-  .bnav-icon{font-size:24px}
+@media(prefers-color-scheme:light){
+  #bottom-nav{background:rgba(255,255,255,.97);border-top-color:#e2e8f0}
+  .bn{color:#94a3b8}.bn.on{color:#1d4ed8}
+  #mss{background:#fff;border-top-color:#e2e8f0}
+  .msb{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}
 }
 </style>
 </head>
@@ -1203,111 +1171,42 @@ function showError(msg){var el=document.getElementById('error-box');el.textConte
 function showWarnings(){var k=Object.keys(methodWarnings);var el=document.getElementById('warn-box');if(!k.length){el.style.display='none';return;}el.innerHTML='ℹ Bazı veriler atlandı: <span style="font-family:monospace;color:#f59e0b">'+k.join(' · ')+'</span>';el.style.display='block';}
 
 // ── MOBILE NAV ──────────────────────────────────────
-var BNAV_TABS = {'overview':'bnav-overview','sales':'bnav-sales','deals':'bnav-deals','activities':'bnav-activities'};
 
-function setMainTabMobile(t) {
-  setMainTab(t);
-  // Update bottom nav active state
-  Object.keys(BNAV_TABS).forEach(function(k){
-    var el = document.getElementById(BNAV_TABS[k]);
-    if(el) el.classList.toggle('active', k===t);
-  });
+);
   var moreBtn = document.getElementById('bnav-more');
   if(moreBtn) moreBtn.classList.toggle('active', !BNAV_TABS[t]);
 }
 
 
 // ── MORE SHEET ──────────────────────────────────────
-function openMoreSheet() {
-  document.getElementById('more-sheet').style.display = 'block';
-  document.getElementById('more-overlay').style.display = 'block';
-  document.body.style.overflow = 'hidden';
-}
-function closeMoreSheet() {
-  document.getElementById('more-sheet').style.display = 'none';
-  document.getElementById('more-overlay').style.display = 'none';
-  document.body.style.overflow = '';
-}
 
-// PWA Service Worker
-if('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').then(function(reg) {
-      console.log('SW registered');
-    }).catch(function(e) {
-      console.log('SW failed:', e);
-    });
+
+
+);
   });
 }
 
-// iOS PWA: prevent bounce scroll
 document.addEventListener('touchmove', function(e) {
   if(e.target.closest('#cal-detail-body,#cal-verify-body,.tbl-row,.table-wrap,#content')) return;
 }, {passive:true});
 
 // Pull to refresh hint
-var startY = 0;
 document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY; }, {passive:true});
 
 </script>
 
 <!-- BOTTOM NAV (Mobile) -->
-<div id="bottom-nav">
-  <div class="nav-item active" data-page="overview" onclick="goPage('overview')"><div class="nav-icon">📊</div><div class="nav-label">Genel</div></div>
-  <div class="nav-item" data-page="sales" onclick="goPage('sales')"><div class="nav-icon">💼</div><div class="nav-label">Satış</div></div>
-  <div class="nav-item" data-page="deals" onclick="goPage('deals')"><div class="nav-icon">🤝</div><div class="nav-label">Anlaşma</div></div>
-  <div class="nav-item" data-page="calendar" onclick="goPage('calendar')"><div class="nav-icon">📅</div><div class="nav-label">Takvim</div></div>
-  <div class="nav-item" id="nav-more" onclick="openMoreSheet()"><div class="nav-icon">⋯</div><div class="nav-label">Daha</div></div>
-</div>
 
 <!-- PWA SW -->
 <!-- MORE SHEET (mobile only) -->
-<div id="more-overlay" onclick="closeMoreSheet()" style="display:none"></div>
-<div id="more-sheet" style="display:none">
-  <div class="sheet-handle"></div>
-  <div class="sheet-title">Diğer Sayfalar</div>
-  <div class="sheet-grid">
-    <button class="sheet-btn" onclick="setMainTabMobile('tech');closeMoreSheet()"><span class="sb-icon">🔧</span>Teknik</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('lost');closeMoreSheet()"><span class="sb-icon">❌</span>Kayıplar</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('trend');closeMoreSheet()"><span class="sb-icon">📈</span>Trend</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('target');closeMoreSheet()"><span class="sb-icon">🎯</span>Hedef</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('source');closeMoreSheet()"><span class="sb-icon">📡</span>Kaynak</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('calendar');closeMoreSheet()"><span class="sb-icon">📅</span>Takvim</button>
-    <button class="sheet-btn" onclick="setMainTabMobile('verify');closeMoreSheet()"><span class="sb-icon">🔍</span>Yaptı mı?</button>
-    <button class="sheet-btn" onclick="document.getElementById('wh-input').value=webhookUrl;document.getElementById('modal').style.display='flex';closeMoreSheet()"><span class="sb-icon">⚙️</span>Ayarlar</button>
-  </div>
-</div>
 
 <!-- BOTTOM NAV (mobile only) -->
-<div id="bottom-nav">
-  <button class="bnav-item active" id="bnav-overview" onclick="setMainTabMobile('overview')">
-    <span class="bnav-icon">📊</span>
-    <span class="bnav-label">Genel</span>
-  </button>
-  <button class="bnav-item" id="bnav-sales" onclick="setMainTabMobile('sales')">
-    <span class="bnav-icon">💼</span>
-    <span class="bnav-label">Satış</span>
-  </button>
-  <button class="bnav-item" id="bnav-deals" onclick="setMainTabMobile('deals')">
-    <span class="bnav-icon">🤝</span>
-    <span class="bnav-label">Anlaşma</span>
-  </button>
-  <button class="bnav-item" id="bnav-activities" onclick="setMainTabMobile('activities')">
-    <span class="bnav-icon">📋</span>
-    <span class="bnav-label">Aktivite</span>
-  </button>
-  <button class="bnav-item" id="bnav-more" onclick="openMoreSheet()">
-    <span class="bnav-icon">⋯</span>
-    <span class="bnav-label">Daha Fazla</span>
-  </button>
-</div>
 
 
 
 <script>
 
 // Bottom nav
-var MORE_PAGES=[
   {id:'tech',icon:'🔧',label:'Teknik'},
   {id:'activities',icon:'📋',label:'Aktivite'},
   {id:'lost',icon:'❌',label:'Kayıplar'},
@@ -1339,13 +1238,7 @@ window.addEventListener('load', function(){
   }
 });
 
-function goPage(id){
-  currentMainTab = id; // keep existing var
-  // Hide all views
-  ['overview','sales','tech','activities','deals','lost','trend','target','source','calendar','verify'].forEach(function(k){
-    var el=document.getElementById('view-'+k);if(el)el.style.display='none';
-    var mt=document.getElementById('mt-'+k);if(mt)mt.classList.remove('active');
-  });
+);
   // Show selected
   var view=document.getElementById('view-'+id);if(view)view.style.display='block';
   var mt2=document.getElementById('mt-'+id);if(mt2)mt2.classList.add('active');
@@ -1367,11 +1260,42 @@ function goPage(id){
   if(id==='source'&&currentData)renderSource();
 }
 
-function toggleMoreSheet(){
-    }
-function closeMoreSheet(){
-    }
+
+
+
+var _BT=['overview','sales','deals','activities'];
+function mbt(t){
+  setMainTab(t);
+  for(var i=0;i<4;i++){var e=document.getElementById('bn'+i);if(e)e.className='bn'+(_BT[i]===t?' on':'');}
+  var m=document.getElementById('bn4');if(m)m.className='bn'+(_BT.indexOf(t)===-1?' on':'');
+}
+function mos(){document.getElementById('mss').style.display='block';document.getElementById('mso').style.display='block';}
+function mcs(){document.getElementById('mss').style.display='none';document.getElementById('mso').style.display='none';}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(function(){});
 </script>
 
+
+<div id="bottom-nav">
+  <button class="bn on" id="bn0" onclick="mbt('overview')"><em class="bi">📊</em><span class="bl">Genel</span></button>
+  <button class="bn" id="bn1" onclick="mbt('sales')"><em class="bi">💼</em><span class="bl">Satış</span></button>
+  <button class="bn" id="bn2" onclick="mbt('deals')"><em class="bi">🤝</em><span class="bl">Anlaşma</span></button>
+  <button class="bn" id="bn3" onclick="mbt('activities')"><em class="bi">📋</em><span class="bl">Aktivite</span></button>
+  <button class="bn" id="bn4" onclick="mos()"><em class="bi">⋯</em><span class="bl">Daha Fazla</span></button>
+</div>
+<div id="mso" onclick="mcs()"></div>
+<div id="mss">
+  <div class="msh"></div>
+  <div class="mst">Diğer Sayfalar</div>
+  <div class="msg">
+    <button class="msb" onclick="mbt('tech');mcs()"><em>🔧</em>Teknik</button>
+    <button class="msb" onclick="mbt('lost');mcs()"><em>❌</em>Kayıplar</button>
+    <button class="msb" onclick="mbt('trend');mcs()"><em>📈</em>Trend</button>
+    <button class="msb" onclick="mbt('target');mcs()"><em>🎯</em>Hedef</button>
+    <button class="msb" onclick="mbt('source');mcs()"><em>📡</em>Kaynak</button>
+    <button class="msb" onclick="mbt('calendar');mcs()"><em>📅</em>Takvim</button>
+    <button class="msb" onclick="mbt('verify');mcs()"><em>🔍</em>Yaptı mı?</button>
+    <button class="msb" onclick="document.getElementById('wh-input').value=webhookUrl;document.getElementById('modal').style.display='flex';mcs()"><em>⚙️</em>Ayarlar</button>
+  </div>
+</div>
 </body>
 </html>
