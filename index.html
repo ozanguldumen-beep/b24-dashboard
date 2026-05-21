@@ -1170,19 +1170,8 @@ function hideSpinner(){document.getElementById('spinner').style.display='none';}
 function showError(msg){var el=document.getElementById('error-box');el.textContent='⚠ '+msg;el.style.display='block';document.getElementById('empty').style.display='block';}
 function showWarnings(){var k=Object.keys(methodWarnings);var el=document.getElementById('warn-box');if(!k.length){el.style.display='none';return;}el.innerHTML='ℹ Bazı veriler atlandı: <span style="font-family:monospace;color:#f59e0b">'+k.join(' · ')+'</span>';el.style.display='block';}
 
-// ── MOBILE NAV ──────────────────────────────────────
-
-);
-  var moreBtn = document.getElementById('bnav-more');
-  if(moreBtn) moreBtn.classList.toggle('active', !BNAV_TABS[t]);
-}
 
 
-// ── MORE SHEET ──────────────────────────────────────
-
-
-
-);
   });
 }
 
@@ -1206,27 +1195,8 @@ document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY
 
 <script>
 
-// Bottom nav
-  {id:'tech',icon:'🔧',label:'Teknik'},
-  {id:'activities',icon:'📋',label:'Aktivite'},
-  {id:'lost',icon:'❌',label:'Kayıplar'},
-  {id:'trend',icon:'📈',label:'Trend'},
-  {id:'target',icon:'🎯',label:'Hedef'},
-  {id:'source',icon:'📡',label:'Kaynak'},
-  {id:'verify',icon:'🔍',label:'Yaptı mı?'},
-];
 
-window.addEventListener('load', function(){
-  // Build more grid
-  var grid = document.getElementById('more-grid');
-  if(grid){
-    MORE_PAGES.forEach(function(p){
-      var el=document.createElement('div');
-      el.className='more-item'; el.id='more-item-'+p.id;
-      el.innerHTML='<div class="more-item-icon">'+p.icon+'</div><div>'+p.label+'</div>';
-      el.onclick=function(){closeMoreSheet();goPage(p.id);};
-      grid.appendChild(el);
-    });
+
   }
   // Add theme toggle to header
   var hdrRight=document.getElementById('header-right');
@@ -1237,29 +1207,6 @@ window.addEventListener('load', function(){
     hdrRight.insertBefore(tb,hdrRight.firstChild);
   }
 });
-
-);
-  // Show selected
-  var view=document.getElementById('view-'+id);if(view)view.style.display='block';
-  var mt2=document.getElementById('mt-'+id);if(mt2)mt2.classList.add('active');
-  // Update bottom nav
-  document.querySelectorAll('#bottom-nav .nav-item[data-page]').forEach(function(el){
-    el.classList.toggle('active',el.dataset.page===id);
-  });
-  // Update more grid
-  MORE_PAGES.forEach(function(p){
-    var el=document.getElementById('more-item-'+p.id);
-    if(el)el.classList.toggle('active',p.id===id);
-  });
-  // Scroll to top
-  var content=document.getElementById('content');if(content)content.scrollTop=0;
-  // Lazy renders
-  if(id==='trend'&&currentData)setTimeout(function(){renderTrend();},50);
-  if(id==='calendar')setTimeout(function(){renderCalendar();},50);
-  if(id==='verify')renderCalVerify();
-  if(id==='source'&&currentData)renderSource();
-}
-
 
 
 
