@@ -1169,33 +1169,7 @@ function hideSpinner(){document.getElementById('spinner').style.display='none';}
 function showError(msg){var el=document.getElementById('error-box');el.textContent='⚠ '+msg;el.style.display='block';document.getElementById('empty').style.display='block';}
 function showWarnings(){var k=Object.keys(methodWarnings);var el=document.getElementById('warn-box');if(!k.length){el.style.display='none';return;}el.innerHTML='ℹ Bazı veriler atlandı: <span style="font-family:monospace;color:#f59e0b">'+k.join(' · ')+'</span>';el.style.display='block';}
 
-// ── MOBILE NAV ──────────────────────────────────────
-document.getElementById('bnav-more');
-  if(moreBtn) moreBtn.classList.toggle('active', !BNAV_TABS[t]);
-}
 
-
-// ── MORE SHEET ──────────────────────────────────────
-
-if('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-          console.log('SW registered');
-    }).catch(function(e) {
-      console.log('SW failed:', e);
-    });
-  });
-}
-
-// iOS PWA: prevent bounce scroll
-document.addEventListener('touchmove', function(e) {
-  if(e.target.closest('#cal-detail-body,#cal-verify-body,.tbl-row,.table-wrap,#content')) return;
-}, {passive:true});
-
-// Pull to refresh hint
-var startY = 0;
-document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY; }, {passive:true});
-
-</script>
 
 <!-- BOTTOM NAV (Mobile) -->
 
@@ -1205,40 +1179,6 @@ document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY
 <!-- BOTTOM NAV (mobile only) -->
 
 
-
-<script>
-
-// Bottom nav
-  {id:'tech',icon:'🔧',label:'Teknik'},
-  {id:'activities',icon:'📋',label:'Aktivite'},
-  {id:'lost',icon:'❌',label:'Kayıplar'},
-  {id:'trend',icon:'📈',label:'Trend'},
-  {id:'target',icon:'🎯',label:'Hedef'},
-  {id:'source',icon:'📡',label:'Kaynak'},
-  {id:'verify',icon:'🔍',label:'Yaptı mı?'},
-];
-
-window.addEventListener('load', function(){
-  // Build more grid
-  var grid = document.getElementById('more-grid');
-  if(grid){
-    MORE_PAGES.forEach(function(p){
-      var el=document.createElement('div');
-      el.className='more-item'; el.id='more-item-'+p.id;
-      el.innerHTML='<div class="more-item-icon">'+p.icon+'</div><div>'+p.label+'</div>';
-      el.onclick=function(){closeMoreSheet();goPage(p.id);};
-      grid.appendChild(el);
-    });
-  }
-  // Add theme toggle to header
-  var hdrRight=document.getElementById('header-right');
-  if(hdrRight){
-    var tb=document.createElement('button');
-    tb.id='theme-toggle';tb.textContent=_theme==='dark'?'☀️':'🌙';
-    tb.onclick=toggleTheme;
-    hdrRight.insertBefore(tb,hdrRight.firstChild);
-  }
-});
 
 var _BT=['overview','sales','deals','activities'];
 function mbt(t){
