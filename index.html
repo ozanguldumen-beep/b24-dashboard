@@ -1277,7 +1277,12 @@ function mbt(t){
   var m=document.getElementById('bn4');if(m)m.className='bn'+(_BT.indexOf(t)===-1?' on':'');
 }
 function mos(){document.getElementById('mss').style.display='block';document.getElementById('mso').style.display='block';}
-function mcs(){document.getElementById('mss').style.display='none';document.getElementById('mso').style.display='none';}
+function mcs(){
+  var s=document.getElementById('mss');
+  var o=document.getElementById('mso');
+  if(s) s.style.setProperty('display','none','important');
+  if(o) o.style.setProperty('display','none','important');
+}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(function(){});
 </script>
 
@@ -1291,7 +1296,10 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch
 </div>
 <div id="mso" onclick="mcs()" style="display:none"></div>
 <div id="mss" style="display:none">
-  <div class="msh"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div class="msh" style="margin:0"></div>
+    <button onclick="mcs()" style="background:#1e293b;border:none;color:#94a3b8;font-size:18px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent">✕</button>
+  </div>
   <div class="mst">Diğer Sayfalar</div>
   <div class="msg">
     <button class="msb" onclick="mbt('tech');mcs()"><em>🔧</em>Teknik</button>
