@@ -226,40 +226,39 @@ input{font-family:'DM Sans',sans-serif}
 
 /* ── TABLET (768-900) ─────────────────────────────── */
 
-/* ═══════ MOBILE NAV ═══════════════════════════════════ */
-#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;
-  height:56px;background:#060d1a;border-top:1px solid #1e293b;z-index:200;
-  padding-bottom:env(safe-area-inset-bottom,0px);
+/* MOBILE NAV */
+#bnav{display:none;position:fixed;bottom:0;left:0;right:0;
+  background:#060d1a;border-top:1px solid #1e293b;
+  padding:6px 0 env(safe-area-inset-bottom,0px);z-index:200;
   justify-content:space-around;align-items:center}
 .bn{display:flex;flex-direction:column;align-items:center;gap:2px;
-  min-width:52px;min-height:48px;padding:4px;border:none;background:none;
-  color:#475569;cursor:pointer;justify-content:center;
-  -webkit-tap-highlight-color:transparent;font-family:'DM Sans',sans-serif}
+  min-width:52px;min-height:48px;padding:3px;border:none;background:none;
+  color:#475569;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  font-family:'DM Sans',sans-serif}
 .bn.on{color:#3b82f6}
 .bn:active{opacity:.6}
-.bi{font-size:26px;line-height:1.1}
+.bi{font-size:26px;line-height:1.1;display:block}
 .bl{font-size:10px;font-weight:600}
 #mso{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300}
 #mss{display:none;position:fixed;bottom:0;left:0;right:0;z-index:301;
   background:#0d1b2e;border-radius:20px 20px 0 0;border-top:1px solid #1e293b;
   padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 76px)}
-.msh{width:36px;height:4px;background:#334155;border-radius:2px;margin:0 auto 14px}
-.mst{font-size:11px;color:#475569;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.msh{width:36px;height:4px;background:#334155;border-radius:2px;margin:0 auto 10px}
+.mst{font-size:11px;color:#475569;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
 .msg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.msb{display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:12px 6px;border-radius:12px;border:1px solid #1e293b;
+.msb{display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:12px 4px;border-radius:12px;border:1px solid #1e293b;
   background:#0a1628;color:#e2e8f0;font-size:10px;font-weight:600;
-  cursor:pointer;font-family:'DM Sans',sans-serif;
-  -webkit-tap-highlight-color:transparent}
+  cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
 .msb:active{background:#1e293b}
-.msb em{font-size:24px;font-style:normal;line-height:1;display:block}
+.msb em{font-size:22px;font-style:normal;display:block;line-height:1.2}
 @media(max-width:900px){
-  #bottom-nav{display:flex}
+  #bnav{display:flex}
   #main-tabs{display:none!important}
   #content{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 64px)!important}
 }
 @media(prefers-color-scheme:light){
-  #bottom-nav{background:rgba(255,255,255,.97);border-top-color:#e2e8f0}
+  #bnav{background:rgba(255,255,255,.97);border-top-color:#e2e8f0}
   .bn{color:#94a3b8}.bn.on{color:#1d4ed8}
   #mss{background:#fff;border-top-color:#e2e8f0}
   .msb{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}
@@ -1170,16 +1169,30 @@ function hideSpinner(){document.getElementById('spinner').style.display='none';}
 function showError(msg){var el=document.getElementById('error-box');el.textContent='⚠ '+msg;el.style.display='block';document.getElementById('empty').style.display='block';}
 function showWarnings(){var k=Object.keys(methodWarnings);var el=document.getElementById('warn-box');if(!k.length){el.style.display='none';return;}el.innerHTML='ℹ Bazı veriler atlandı: <span style="font-family:monospace;color:#f59e0b">'+k.join(' · ')+'</span>';el.style.display='block';}
 
+// ── MOBILE NAV ──────────────────────────────────────
+document.getElementById('bnav-more');
+  if(moreBtn) moreBtn.classList.toggle('active', !BNAV_TABS[t]);
+}
 
 
+// ── MORE SHEET ──────────────────────────────────────
+
+if('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+          console.log('SW registered');
+    }).catch(function(e) {
+      console.log('SW failed:', e);
+    });
   });
 }
 
+// iOS PWA: prevent bounce scroll
 document.addEventListener('touchmove', function(e) {
   if(e.target.closest('#cal-detail-body,#cal-verify-body,.tbl-row,.table-wrap,#content')) return;
 }, {passive:true});
 
 // Pull to refresh hint
+var startY = 0;
 document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY; }, {passive:true});
 
 </script>
@@ -1195,8 +1208,27 @@ document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY
 
 <script>
 
+// Bottom nav
+  {id:'tech',icon:'🔧',label:'Teknik'},
+  {id:'activities',icon:'📋',label:'Aktivite'},
+  {id:'lost',icon:'❌',label:'Kayıplar'},
+  {id:'trend',icon:'📈',label:'Trend'},
+  {id:'target',icon:'🎯',label:'Hedef'},
+  {id:'source',icon:'📡',label:'Kaynak'},
+  {id:'verify',icon:'🔍',label:'Yaptı mı?'},
+];
 
-
+window.addEventListener('load', function(){
+  // Build more grid
+  var grid = document.getElementById('more-grid');
+  if(grid){
+    MORE_PAGES.forEach(function(p){
+      var el=document.createElement('div');
+      el.className='more-item'; el.id='more-item-'+p.id;
+      el.innerHTML='<div class="more-item-icon">'+p.icon+'</div><div>'+p.label+'</div>';
+      el.onclick=function(){closeMoreSheet();goPage(p.id);};
+      grid.appendChild(el);
+    });
   }
   // Add theme toggle to header
   var hdrRight=document.getElementById('header-right');
@@ -1208,33 +1240,33 @@ document.addEventListener('touchstart', function(e){ startY = e.touches[0].pageY
   }
 });
 
-
-
-// Show bottom nav on mobile
-(function(){
-  if(window.innerWidth <= 900) {
-    var bn = document.getElementById('bottom-nav');
-    if(bn) bn.style.display = 'flex';
-  }
-})();
 var _BT=['overview','sales','deals','activities'];
 function mbt(t){
   setMainTab(t);
-  for(var i=0;i<4;i++){var e=document.getElementById('bn'+i);if(e)e.className='bn'+(_BT[i]===t?' on':'');}
-  var m=document.getElementById('bn4');if(m)m.className='bn'+(_BT.indexOf(t)===-1?' on':'');
+  for(var i=0;i<4;i++){
+    var e=document.getElementById('bn'+i);
+    if(e) e.className='bn'+(_BT[i]===t?' on':'');
+  }
+  var m=document.getElementById('bn4');
+  if(m) m.className='bn'+(_BT.indexOf(t)===-1?' on':'');
 }
-function mos(){document.getElementById('mss').style.display='block';document.getElementById('mso').style.display='block';}
+function mos(){
+  document.getElementById('mss').style.display='block';
+  document.getElementById('mso').style.display='block';
+}
 function mcs(){
-  var s=document.getElementById('mss');
-  var o=document.getElementById('mso');
-  if(s) s.style.setProperty('display','none','important');
-  if(o) o.style.setProperty('display','none','important');
+  document.getElementById('mss').style.display='none';
+  document.getElementById('mso').style.display='none';
 }
-if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(function(){});
+// Show bottom nav on mobile
+if(window.innerWidth<=900){
+  document.getElementById('bnav').style.display='flex';
+}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function(){});
 </script>
 
 
-<div id="bottom-nav" style="display:none">
+<div id="bnav" style="display:none">
   <button class="bn on" id="bn0" onclick="mbt('overview')"><em class="bi">📊</em><span class="bl">Genel</span></button>
   <button class="bn" id="bn1" onclick="mbt('sales')"><em class="bi">💼</em><span class="bl">Satış</span></button>
   <button class="bn" id="bn2" onclick="mbt('deals')"><em class="bi">🤝</em><span class="bl">Anlaşma</span></button>
@@ -1243,9 +1275,9 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch
 </div>
 <div id="mso" onclick="mcs()" style="display:none"></div>
 <div id="mss" style="display:none">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
     <div class="msh" style="margin:0"></div>
-    <button onclick="mcs()" style="background:#1e293b;border:none;color:#94a3b8;font-size:18px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent">✕</button>
+    <button onclick="mcs()" style="background:#1e293b;border:none;color:#94a3b8;font-size:16px;width:30px;height:30px;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent">✕</button>
   </div>
   <div class="mst">Diğer Sayfalar</div>
   <div class="msg">
