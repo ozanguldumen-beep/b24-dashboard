@@ -226,24 +226,32 @@ input{font-family:'DM Sans',sans-serif}
 
 /* ── TABLET (768-900) ─────────────────────────────── */
 
-/* MOBILE NAV */
-#bnav{display:none;position:fixed;bottom:0;left:0;right:0;
-  background:#060d1a;border-top:1px solid #1e293b;
-  padding:6px 0 env(safe-area-inset-bottom,0px);z-index:200;
-  justify-content:space-around;align-items:center}
-.bn{display:flex;flex-direction:column;align-items:center;gap:2px;
-  min-width:52px;min-height:48px;padding:3px;border:none;background:none;
+/* MOBILE TAB BAR - kanal barının altında */
+#mob-tabs{
+  display:none;
+  background:#060d1a;
+  border-bottom:1px solid #1e293b;
+  padding:0 4px;
+  overflow-x:auto;
+  white-space:nowrap;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+#mob-tabs::-webkit-scrollbar{display:none}
+.mt{display:inline-flex;flex-direction:column;align-items:center;gap:2px;
+  padding:8px 10px;border:none;background:none;
   color:#475569;cursor:pointer;-webkit-tap-highlight-color:transparent;
-  font-family:'DM Sans',sans-serif}
-.bn.on{color:#3b82f6}
-.bn:active{opacity:.6}
-.bi{font-size:26px;line-height:1.1;display:block}
-.bl{font-size:10px;font-weight:600}
+  font-family:'DM Sans',sans-serif;vertical-align:top;
+  border-bottom:2px solid transparent;min-width:56px;}
+.mt.on{color:#3b82f6;border-bottom-color:#3b82f6}
+.mt:active{opacity:.7}
+.mi{font-size:20px;line-height:1.2;display:block}
+.ml{font-size:9px;font-weight:600}
 #mso{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300}
-#mss{display:none;position:fixed;bottom:56px;left:0;right:0;z-index:301;
-  background:#0d1b2e;border-radius:20px 20px 0 0;border-top:1px solid #1e293b;
-  padding:12px 16px 20px;
-  max-height:calc(100vh - 120px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+#mss{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:calc(100% - 32px);max-width:400px;z-index:301;
+  background:#0d1b2e;border-radius:16px;border:1px solid #1e293b;
+  padding:16px;max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .msh{width:36px;height:4px;background:#334155;border-radius:2px;margin:0 auto 10px}
 .mst{font-size:11px;color:#475569;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
 .msg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -254,15 +262,17 @@ input{font-family:'DM Sans',sans-serif}
 .msb:active{background:#1e293b}
 .msb em{font-size:22px;font-style:normal;display:block;line-height:1.2}
 @media(max-width:900px){
-  #bnav{display:flex}
+  #mob-tabs{display:block!important}
   #main-tabs{display:none!important}
-  #content{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 64px)!important}
+  #bnav{display:none!important}
+  #content{padding-top:8px}
 }
 @media(prefers-color-scheme:light){
-  #bnav{background:rgba(255,255,255,.97);border-top-color:#e2e8f0}
-  .bn{color:#94a3b8}.bn.on{color:#1d4ed8}
-  #mss{background:#fff;border-top-color:#e2e8f0}
+  #mob-tabs{background:#fff;border-bottom-color:#e2e8f0}
+  .mt{color:#94a3b8}.mt.on{color:#1d4ed8;border-bottom-color:#1d4ed8}
+  #mss{background:#fff;border-color:#e2e8f0}
   .msb{background:#f8fafc;border-color:#e2e8f0;color:#0f172a}
+  #mso{background:rgba(0,0,0,.4)}
 }
 </style>
 </head>
@@ -296,6 +306,19 @@ input{font-family:'DM Sans',sans-serif}
   </div>
 </div>
 <div class="filter-bar" id="pipeline-bar"><span class="filter-label">Kanal:</span></div>
+<div id="mob-tabs">
+  <button class="mt on" id="mt0" onclick="mbt('overview')"><em class="mi">📊</em><span class="ml">Genel</span></button>
+  <button class="mt" id="mt1" onclick="mbt('sales')"><em class="mi">💼</em><span class="ml">Satış</span></button>
+  <button class="mt" id="mt2" onclick="mbt('deals')"><em class="mi">🤝</em><span class="ml">Anlaşma</span></button>
+  <button class="mt" id="mt3" onclick="mbt('activities')"><em class="mi">📋</em><span class="ml">Aktivite</span></button>
+  <button class="mt" id="mt4" onclick="mbt('tech')"><em class="mi">🔧</em><span class="ml">Teknik</span></button>
+  <button class="mt" id="mt5" onclick="mbt('lost')"><em class="mi">❌</em><span class="ml">Kayıplar</span></button>
+  <button class="mt" id="mt6" onclick="mbt('trend')"><em class="mi">📈</em><span class="ml">Trend</span></button>
+  <button class="mt" id="mt7" onclick="mbt('target')"><em class="mi">🎯</em><span class="ml">Hedef</span></button>
+  <button class="mt" id="mt8" onclick="mbt('source')"><em class="mi">📡</em><span class="ml">Kaynak</span></button>
+  <button class="mt" id="mt9" onclick="mbt('calendar')"><em class="mi">📅</em><span class="ml">Takvim</span></button>
+  <button class="mt" id="mt10" onclick="mbt('verify')"><em class="mi">🔍</em><span class="ml">Yaptı mı?</span></button>
+</div>
 <div id="content">
   <div id="empty">
     <div style="font-size:48px;margin-bottom:14px">🔌</div>
@@ -1181,15 +1204,16 @@ function showWarnings(){var k=Object.keys(methodWarnings);var el=document.getEle
 
 
 
-var _BT=['overview','sales','deals','activities'];
+var _MT=['overview','sales','deals','activities','tech','lost','trend','target','source','calendar','verify'];
 function mbt(t){
   setMainTab(t);
-  for(var i=0;i<4;i++){
-    var e=document.getElementById('bn'+i);
-    if(e) e.className='bn'+(_BT[i]===t?' on':'');
+  for(var i=0;i<11;i++){
+    var e=document.getElementById('mt'+i);
+    if(e) e.className='mt'+(_MT[i]===t?' on':'');
   }
-  var m=document.getElementById('bn4');
-  if(m) m.className='bn'+(_BT.indexOf(t)===-1?' on':'');
+  // scroll active tab into view
+  var active=document.querySelector('#mob-tabs .mt.on');
+  if(active) active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
 }
 function mos(){
   document.getElementById('mss').style.display='block';
@@ -1199,15 +1223,12 @@ function mcs(){
   document.getElementById('mss').style.display='none';
   document.getElementById('mso').style.display='none';
 }
-// Show bottom nav on mobile
-if(window.innerWidth<=900){
-  document.getElementById('bnav').style.display='flex';
-}
+// Bottom nav shown via CSS @media
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function(){});
 </script>
 
 
-<div id="bnav" style="display:none">
+<div id="bnav">
   <button class="bn on" id="bn0" onclick="mbt('overview')"><em class="bi">📊</em><span class="bl">Genel</span></button>
   <button class="bn" id="bn1" onclick="mbt('sales')"><em class="bi">💼</em><span class="bl">Satış</span></button>
   <button class="bn" id="bn2" onclick="mbt('deals')"><em class="bi">🤝</em><span class="bl">Anlaşma</span></button>
