@@ -347,7 +347,7 @@ input{font-family:'DM Sans',sans-serif}
     <div id="view-sales" style="display:none"><div class="cards-grid" id="cards-sales"></div><div class="table-wrap"><div class="tbl-head"><span class="tbl-head-title">💼 Satış Ekibi</span><span id="sales-count" style="font-size:11px;color:#475569"></span></div><div id="sales-body"></div></div></div>
     <div id="view-tech" style="display:none"><div class="cards-grid" id="cards-tech"></div><div class="table-wrap"><div class="tbl-head"><span class="tbl-head-title">🔧 Teknik Ekip</span><span id="tech-count" style="font-size:11px;color:#475569"></span></div><div id="tech-body"></div></div></div>
     <div id="view-activities" style="display:none">
-      <div class="sub-tabs"><button class="sub-tab active" id="at-contacts">👤 Kontak Görüşmeleri</button><button class="sub-tab" id="at-companies">🏢 Şirket Ziyaretleri</button></div>
+      <div class="sub-tabs"><button class="sub-tab active" id="at-contacts">👤 Kontak Görüşmeleri</button><button class="sub-tab" id="at-companies">🏢 Şirket Ziyaretleri</button><button class="sub-tab" id="at-deals">🤝 Anlaşma Etkinlikleri</button></div>
       <div class="table-wrap"><div class="tbl-head"><span class="tbl-head-title" id="act-title">Kontak Görüşmeleri</span><span id="act-count" style="font-size:11px;color:#475569"></span></div><div id="act-body"></div></div>
     </div>
     <div id="view-deals" style="display:none">
@@ -467,6 +467,7 @@ document.getElementById('cal-next').addEventListener('click',function(){calMonth
 document.getElementById('cal-today').addEventListener('click',function(){var n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();calSelectedDay=new Date();renderCalendar();});
 document.getElementById('at-contacts').addEventListener('click',function(){currentActTab='contacts';renderActivities();});
 document.getElementById('at-companies').addEventListener('click',function(){currentActTab='companies';renderActivities();});
+document.getElementById('at-deals').addEventListener('click',function(){currentActTab='deals';renderActivities();});
 ['all','won','lost','changed'].forEach(function(k){document.getElementById('dt-'+k).addEventListener('click',function(){currentDealTab=k;renderDealsView();});});
 document.getElementById('target-save-btn').addEventListener('click',function(){var v=parseFloat(document.getElementById('target-input').value);if(isNaN(v)||v<=0)return;localStorage.setItem(TK,String(v));renderTarget();});
 
@@ -503,6 +504,7 @@ function loadData(){
     b24All('crm.deal.list',{filter:df,select:['ID','TITLE','STAGE_ID','OPPORTUNITY','ASSIGNED_BY_ID','DATE_CREATE','DATE_MODIFY','CATEGORY_ID','STAGE_SEMANTIC_ID','SOURCE_ID','COMPANY_ID','CONTACT_ID','UF_CRM_615E99CB390FB']}).catch(function(){return[];}),
     b24All('crm.activity.list',{filter:{'>=CREATED':range.start,'<=CREATED':range.end,'OWNER_TYPE_ID':'3','!=TYPE_ID':'1'},select:['ID','SUBJECT','TYPE_ID','RESPONSIBLE_ID','CREATED','OWNER_ID','COMPLETED']}).catch(function(){return[];}),
     b24All('crm.activity.list',{filter:{'>=CREATED':range.start,'<=CREATED':range.end,'OWNER_TYPE_ID':'4','!=TYPE_ID':'1'},select:['ID','SUBJECT','TYPE_ID','RESPONSIBLE_ID','CREATED','OWNER_ID','COMPLETED']}).catch(function(){return[];}),
+    b24All('crm.activity.list',{filter:{'>=CREATED':range.start,'<=CREATED':range.end,'OWNER_TYPE_ID':'2','!=TYPE_ID':'1'},select:['ID','SUBJECT','TYPE_ID','RESPONSIBLE_ID','CREATED','OWNER_ID','COMPLETED']}).catch(function(){return[];}),
     b24All('tasks.task.list',{filter:{'>=CREATED_DATE':range.start,'<=CREATED_DATE':range.end},select:['id','title','status','responsible','createdDate']}).then(function(r){return r&&r.tasks?r.tasks:(r||[]);}).catch(function(){return[];}),
     b24All('voximplant.statistic.get',{FILTER:{'>=CALL_START_DATE':range.start,'<=CALL_START_DATE':range.end}}).catch(function(){methodWarnings['telephony']=true;return[];}),
     b24All('crm.deal.list',{filter:{'>=DATE_MODIFY':range.start,'<=DATE_MODIFY':range.end,'<DATE_CREATE':range.start},select:['ID','TITLE','STAGE_ID','OPPORTUNITY','ASSIGNED_BY_ID','DATE_CREATE','DATE_MODIFY','STAGE_SEMANTIC_ID','CATEGORY_ID','COMPANY_ID','SOURCE_ID','UF_CRM_615E99CB390FB']}).catch(function(){return[];}),
@@ -511,15 +513,16 @@ function loadData(){
     b24All('voximplant.statistic.get',{FILTER:{'>=CALL_START_DATE':tws.toISOString(),'<=CALL_START_DATE':now.toISOString()}}).catch(function(){return[];}),
     b24All('voximplant.statistic.get',{FILTER:{'>=CALL_START_DATE':lws.toISOString(),'<=CALL_START_DATE':lwe.toISOString()}}).catch(function(){return[];}),
   ]).then(function(res){
-    currentData={pipelines:res[0],depts:res[1],users:res[2],deals:res[3],actContacts:res[4],actCompanies:res[5],tasks:res[6],calls:res[7],dealChanges:res[8],tdThis:res[9],tdLast:res[10],tcThis:res[11],tcLast:res[12],range:range,udm:buildDeptMap(res[2])};
+    currentData={pipelines:res[0],depts:res[1],users:res[2],deals:res[3],actContacts:res[4],actCompanies:res[5],actDeals:res[6],tasks:res[7],calls:res[8],dealChanges:res[9],tdThis:res[10],tdLast:res[11],tcThis:res[12],tcLast:res[13],range:range,udm:buildDeptMap(res[2])};
     fetchNames().then(function(){renderPipelines(currentData.pipelines);renderDashboard();document.getElementById('last-refresh').textContent='↻ '+new Date().toLocaleTimeString('tr-TR');showWarnings();hideSpinner();});
   }).catch(function(err){showError(err.message);hideSpinner();});
 }
 
 function fetchNames(){
-  var cIds=[],coIds=[];
+  var cIds=[],coIds=[],dIds=[];
   currentData.actContacts.forEach(function(a){if(a.OWNER_ID&&cIds.indexOf(a.OWNER_ID)===-1)cIds.push(a.OWNER_ID);});
   currentData.actCompanies.forEach(function(a){if(a.OWNER_ID&&coIds.indexOf(a.OWNER_ID)===-1)coIds.push(a.OWNER_ID);});
+  (currentData.actDeals||[]).forEach(function(a){if(a.OWNER_ID&&dIds.indexOf(a.OWNER_ID)===-1)dIds.push(a.OWNER_ID);});
   // Deal'lerdeki şirket ID'leri
   // Deal kontakları
   var dealContactIds=[];
@@ -537,6 +540,12 @@ function fetchNames(){
   var ps=[];
   if(allContactIds.length)ps.push(b24('crm.contact.list',{filter:{ID:allContactIds},select:['ID','NAME','LAST_NAME']}).then(function(r){(r||[]).forEach(function(c){currentData['_c_'+c.ID]=((c.NAME||'')+' '+(c.LAST_NAME||'')).trim();});}).catch(function(){}));
   if(allCoIds.length)ps.push(b24('crm.company.list',{filter:{ID:allCoIds},select:['ID','TITLE']}).then(function(r){(r||[]).forEach(function(c){currentData['_co_'+c.ID]=c.TITLE||'';});}).catch(function(){}));
+  // Anlaşma aktiviteleri için anlaşma başlıklarını önce deals'ten bak, yoksa API'den çek
+  if(dIds.length){
+    dIds.forEach(function(id){var d=null;currentData.deals.forEach(function(x){if(x.ID===id)d=x;});if(d)currentData['_d_'+id]=d.TITLE||('Anlaşma #'+id);});
+    var missingDIds=dIds.filter(function(id){return!currentData['_d_'+id];});
+    if(missingDIds.length)ps.push(b24('crm.deal.list',{filter:{ID:missingDIds},select:['ID','TITLE']}).then(function(r){(r||[]).forEach(function(d){currentData['_d_'+d.ID]=d.TITLE||('Anlaşma #'+d.ID);});}).catch(function(){}));
+  }
   // Pipeline aşama adları
   ps.push(b24('crm.status.list',{filter:{ENTITY_ID:'DEAL_STAGE'}}).then(function(r){
     currentData._stages={};
@@ -560,6 +569,7 @@ function computeUserStats(){
   d.deals.forEach(function(x){if(ensure(x.ASSIGNED_BY_ID)){map[x.ASSIGNED_BY_ID].deals++;if(x.STAGE_SEMANTIC_ID==='S'){map[x.ASSIGNED_BY_ID].wonDeals++;map[x.ASSIGNED_BY_ID].dealValue+=parseFloat(x.OPPORTUNITY||0);}}});
   d.actContacts.forEach(function(x){if(ensure(x.RESPONSIBLE_ID)){map[x.RESPONSIBLE_ID].activities++;map[x.RESPONSIBLE_ID].contactActs++;}});
   d.actCompanies.forEach(function(x){if(ensure(x.RESPONSIBLE_ID)){map[x.RESPONSIBLE_ID].activities++;map[x.RESPONSIBLE_ID].companyActs++;}});
+  (d.actDeals||[]).forEach(function(x){if(ensure(x.RESPONSIBLE_ID)){map[x.RESPONSIBLE_ID].activities++;}});
   d.tasks.forEach(function(x){var uid=(x.responsible&&x.responsible.id)?x.responsible.id:x.RESPONSIBLE_ID;if(!uid||!ensure(uid))return;map[uid].tasksTotal++;if(x.status==='5')map[uid].tasksDone++;});
   d.calls.forEach(function(x){var uid=x.PORTAL_USER_ID||x.RESPONSIBLE_ID;if(uid&&ensure(uid))map[uid].calls++;});
   return Object.values(map).filter(function(u){return u.deals+u.activities+u.calls+u.tasksTotal>0;});
@@ -630,16 +640,23 @@ function renderDashboard(){
 }
 
 function renderActivities(){
-  var isC=currentActTab==='contacts',acts=isC?currentData.actContacts:currentData.actCompanies;
-  document.getElementById('act-title').textContent=(isC?'Kontak Görüşmeleri':'Şirket Ziyaretleri')+' ('+acts.length+')';
+  var tab=currentActTab;
+  var acts=tab==='contacts'?currentData.actContacts:tab==='companies'?currentData.actCompanies:(currentData.actDeals||[]);
+  var title=tab==='contacts'?'Kontak Görüşmeleri':tab==='companies'?'Şirket Ziyaretleri':'Anlaşma Etkinlikleri';
+  document.getElementById('act-title').textContent=title+' ('+acts.length+')';
   document.getElementById('act-count').textContent=acts.length+' kayıt';
-  document.getElementById('at-contacts').classList.toggle('active',isC);
-  document.getElementById('at-companies').classList.toggle('active',!isC);
+  document.getElementById('at-contacts').classList.toggle('active',tab==='contacts');
+  document.getElementById('at-companies').classList.toggle('active',tab==='companies');
+  document.getElementById('at-deals').classList.toggle('active',tab==='deals');
   var cols='1fr 120px 80px 110px 70px';
-  var html='<div class="col-heads" style="grid-template-columns:'+cols+';gap:8px">'+(isC?['Kontak','Sorumlu','Tür','Tarih','Durum']:['Şirket','Sorumlu','Tür','Tarih','Durum']).map(function(h){return'<div class="col-head">'+h+'</div>';}).join('')+'</div>';
+  var colLabel=tab==='contacts'?'Kontak':tab==='companies'?'Şirket':'Anlaşma';
+  var html='<div class="col-heads" style="grid-template-columns:'+cols+';gap:8px">'+[colLabel,'Sorumlu','Tür','Tarih','Durum'].map(function(h){return'<div class="col-head">'+h+'</div>';}).join('')+'</div>';
   if(!acts.length){html+='<div class="empty-row">Bu dönem için kayıt yok.</div>';}
   else{acts.slice().sort(function(a,b){return new Date(b.CREATED)-new Date(a.CREATED);}).forEach(function(a){
-    var on=isC?(currentData['_c_'+a.OWNER_ID]||'Kontak #'+a.OWNER_ID):(currentData['_co_'+a.OWNER_ID]||'Şirket #'+a.OWNER_ID);
+    var on;
+    if(tab==='contacts') on=currentData['_c_'+a.OWNER_ID]||'Kontak #'+a.OWNER_ID;
+    else if(tab==='companies') on=currentData['_co_'+a.OWNER_ID]||'Şirket #'+a.OWNER_ID;
+    else on=currentData['_d_'+a.OWNER_ID]||'Anlaşma #'+a.OWNER_ID;
     var user=null;currentData.users.forEach(function(u){if(u.ID===a.RESPONSIBLE_ID)user=u;});
     var un=user?((user.NAME||'')+' '+(user.LAST_NAME||'')).trim():('#'+a.RESPONSIBLE_ID);
     var at=ACT_TYPES[String(a.TYPE_ID)]||{label:'Diğer',color:'#64748b',bg:'#1e293b'};
@@ -1034,7 +1051,7 @@ function renderCalVerify() {
     var owner = e._userName || ('Kullanıcı #'+userId);
 
     // O gün o kullanıcının CRM aktivitesi var mı?
-    var dayActs = (currentData.actContacts || []).concat(currentData.actCompanies || []).filter(function(a) {
+    var dayActs = (currentData.actContacts || []).concat(currentData.actCompanies || []).concat(currentData.actDeals || []).filter(function(a) {
       var actDate = a.CREATED ? a.CREATED.slice(0,10) : '';
       return actDate === eventDate && a.RESPONSIBLE_ID === userId;
     });
